@@ -11,6 +11,11 @@ create table if not exists public.users (
   created_at timestamptz not null default now()
 );
 
+alter table if exists public.users
+  add column if not exists name text,
+  add column if not exists college text,
+  add column if not exists created_at timestamptz not null default now();
+
 create table if not exists public.assessments (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
@@ -19,6 +24,12 @@ create table if not exists public.assessments (
   ai_analysis jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now()
 );
+
+alter table if exists public.assessments
+  add column if not exists answers_json jsonb not null default '{}'::jsonb,
+  add column if not exists payment_status boolean not null default false,
+  add column if not exists ai_analysis jsonb not null default '{}'::jsonb,
+  add column if not exists created_at timestamptz not null default now();
 
 create index if not exists idx_users_created_at on public.users(created_at desc);
 create index if not exists idx_assessments_user_id on public.assessments(user_id);
@@ -30,3 +41,5 @@ comment on table public.assessments is 'SARATHI assessment submissions and resul
 
 -- RLS is intentionally left disabled for this MVP because the Next.js API uses the service role key server-side.
 -- If you enable RLS later, add explicit policies before switching frontend reads directly to Supabase.
+
+notify pgrst, 'reload schema';

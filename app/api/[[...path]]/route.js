@@ -16,6 +16,7 @@ const withSchemaHint = (error, fallbackMessage = 'Unexpected Supabase error') =>
   const schemaMissing =
     message.includes('Could not find the table') ||
     message.includes('relation') ||
+    message.includes('column') ||
     error?.code === '42P01'
 
   return {
@@ -26,15 +27,23 @@ const withSchemaHint = (error, fallbackMessage = 'Unexpected Supabase error') =>
   }
 }
 
-const normalizeAssessment = (row) => ({
-  id: row?.id,
-  user_id: row?.user_id,
-  payment_status: row?.payment_status,
-  created_at: row?.created_at,
-  answers_json: row?.answers_json || {},
-  ai_analysis: row?.ai_analysis || {},
-  user: row?.users || null,
-})
+const assessmentWithUserSelect = '*, users(id, email, name, college, created_at)'
+
+const normalizeAssessment = (row) => {
+  const user = row?.users || row?.user || null
+  const answers = row?.answers_json || row?.raw_answers || {}
+  const storedAnalysis = row?.ai_analysis || row?.ai_analysis_result
+
+  return {
+    id: row?.id,
+    user_id: row?.user_id,
+    payment_status: row?.payment_status,
+    created_at: row?.created_at,
+    answers_json: answers,
+    ai_analysis: storedAnalysis || buildCareerAnalysis(answers, user?.name || 'Student'),
+    user,
+  }
+}
 
 const getRoute = (params) => {
   const rawPath = params?.path || []
@@ -55,6 +64,38 @@ const validateAnswers = (answers) => {
     const value = answers[question.id]
     return validIds.has(question.id) && validOptions.has(value)
   })
+}
+
+const createAssessmentRecord = async (supabase, userId, answers, aiAnalysis) => {
+  let result = await supabase
+    .from('assessments')
+    .insert({
+      user_id: userId,
+      raw_answers: answers,
+      payment_status: false,
+      ai_analysis_result: aiAnalysis,
+    })
+    .select('*')
+    .single()
+
+  const fallbackNeeded =
+    result?.error?.message?.includes('raw_answers') ||
+    result?.error?.message?.includes('ai_analysis_result')
+
+  if (fallbackNeeded) {
+    result = await supabase
+      .from('assessments')
+      .insert({
+        user_id: userId,
+        answers_json: answers,
+        payment_status: false,
+        ai_analysis: aiAnalysis,
+      })
+      .select('*')
+      .single()
+  }
+
+  return result
 }
 
 export async function OPTIONS() {
@@ -116,16 +157,12 @@ const handleRoute = async (request, { params }) => {
 
       const aiAnalysis = buildCareerAnalysis(answers, name)
 
-      const { data: assessment, error: assessmentError } = await supabase
-        .from('assessments')
-        .insert({
-          user_id: user.id,
-          answers_json: answers,
-          payment_status: false,
-          ai_analysis: aiAnalysis,
-        })
-        .select('id, user_id, payment_status, created_at, answers_json, ai_analysis')
-        .single()
+      const { data: assessment, error: assessmentError } = await createAssessmentRecord(
+        supabase,
+        user.id,
+        answers,
+        aiAnalysis
+      )
 
       if (assessmentError) {
         return jsonResponse(withSchemaHint(assessmentError, 'Unable to create assessment'), 500)
@@ -133,10 +170,10 @@ const handleRoute = async (request, { params }) => {
 
       return jsonResponse({
         ok: true,
-        assessment: {
+        assessment: normalizeAssessment({
           ...assessment,
-          user,
-        },
+          users: user,
+        }),
         next_step: `/checkout?assessmentId=${assessment.id}`,
       }, 201)
     }
@@ -146,7 +183,7 @@ const handleRoute = async (request, { params }) => {
 
       const { data, error } = await supabase
         .from('assessments')
-        .select('id, user_id, payment_status, created_at, answers_json, ai_analysis, users(id, email, name, college, created_at)')
+        .select(assessmentWithUserSelect)
         .eq('id', assessmentId)
         .single()
 
@@ -170,7 +207,7 @@ const handleRoute = async (request, { params }) => {
         .from('assessments')
         .update({ payment_status: true })
         .eq('id', assessmentId)
-        .select('id, payment_status, created_at')
+        .select('*')
         .single()
 
       if (error) {
@@ -195,7 +232,7 @@ const handleRoute = async (request, { params }) => {
 
       const { data, error } = await supabase
         .from('assessments')
-        .select('id, user_id, payment_status, created_at, answers_json, ai_analysis, users(id, email, name, college, created_at)')
+        .select(assessmentWithUserSelect)
         .eq('id', assessmentId)
         .single()
 

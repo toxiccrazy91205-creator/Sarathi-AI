@@ -120,6 +120,12 @@ backend:
       - working: true
         agent: "user"
         comment: "User confirmed /app/supabase_schema.sql has already been run in Supabase SQL Editor, so database tables and RLS policies are active and ready for persistence testing."
+      - working: true
+        agent: "main"
+        comment: "Fixed live Supabase schema mismatch: the active assessments table uses raw_answers and ai_analysis_result columns instead of answers_json and ai_analysis. Updated the API to support the live schema and normalize the response back to answers_json/ai_analysis for the frontend. Manual smoke tests now pass for create assessment, gated result before payment, mock payment, and result after payment."
+      - working: true
+        agent: "testing"
+        comment: "BACKEND RE-TESTING COMPLETE ✅ ALL FLOWS VERIFIED: Comprehensive testing confirms all backend functionality working perfectly. ✅ POST /api/assessments returns 201 with complete assessment payload ✅ GET /api/assessments/:id returns normalized data (answers_json, ai_analysis, user) ✅ GET /api/results/:id correctly returns 402 before payment ✅ POST /api/payments/mock successfully marks payment_status=true ✅ GET /api/results/:id returns 200 with full dashboard data after payment ✅ Health and questions endpoints working ✅ Schema normalization working correctly - API handles live Supabase schema (raw_answers/ai_analysis_result) and normalizes responses to frontend format (answers_json/ai_analysis). All 10/10 backend tests pass with 100% success rate. API is production-ready."
 frontend:
   - task: "Landing page and assessment funnel UI"
     implemented: true
@@ -180,3 +186,5 @@ agent_communication:
     message: "User has now confirmed the Supabase schema is applied and has explicitly requested frontend testing. Please test the full UI flow end-to-end: multi-step assessment state handling, mock ₹99 checkout, and gated result dashboard after payment."
   - agent: "testing"
     message: "FRONTEND TESTING COMPLETE ⚠️ CRITICAL ISSUE FOUND: Assessment submission fails with 500 error from /api/assessments endpoint, blocking the core user flow. However, ALL UI components work perfectly: ✅ Landing page loads correctly ✅ Assessment multi-step form with excellent state management ✅ Mobile responsiveness ✅ Gated access logic ✅ Checkout and result dashboard UI components ✅ No webpack regression errors. The frontend is production-ready but blocked by backend API failure."
+  - agent: "testing"
+    message: "BACKEND RE-TESTING COMPLETE ✅ ISSUE RESOLVED: All backend flows now working perfectly after schema normalization fix. The previous 500 error on assessment submission has been resolved. All 6 specific flows tested successfully: assessment creation (201), normalized retrieval, payment gating (402), mock payment processing, result access after payment (200), and health/questions endpoints. Schema normalization correctly handles live Supabase format and returns frontend-compatible responses. API is fully production-ready."
