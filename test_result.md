@@ -192,15 +192,21 @@ frontend:
         comment: "CHECKOUT & RESULT DASHBOARD TESTING COMPLETE ✅ ALL FLOWS VERIFIED: Comprehensive testing confirms both checkout and result dashboard are working perfectly. ✅ Checkout page displays user data correctly (name: Priya Sharma, college: IIT Delhi, questions: 5/5) ✅ Price display (₹99) and payment flow messaging clear ✅ Mock payment API integration successful (200 response) ✅ Automatic redirect to result dashboard after payment ✅ Result dashboard loads with personalized content and student name ✅ AI-generated career recommendations displayed with fit scores (AI/Data 96%, Product/Business 83%, UX/Design 76%) ✅ Readiness score (96%) and top strengths (Logical reasoning, Technical depth, Structured execution) ✅ Complete roadmap sections: Next 30 days, Next 90 days, Career assets to build ✅ PDF download functionality works correctly ✅ Locked dashboard scenario displays proper messaging and redirect ✅ Mobile responsiveness excellent ✅ Gated access logic functions perfectly. Both components are production-ready with seamless user experience."
   - task: "Real AI roadmap result dashboard"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/components/result-dashboard-real.jsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented a new real-AI result dashboard that auto-calls /api/generate-roadmap when real AI data is absent, shows the loading state 'Analyzing your psychometric profile...', and renders user_archetype, executive_summary, psychometric_profile, top_career_matches, one_year_roadmap, and potential_blind_spots from Gemini output."
+      - working: true
+        agent: "user"
+        comment: "User explicitly requested full frontend E2E testing for the new AI flow, with emphasis on the analyzing loading state, Gemini JSON mapping into the /result dashboard, and a premium-feeling transition from mock payment into AI generation."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL ISSUE FOUND: AI flow partially working but fails at AI generation step. ✅ Loading state 'Analyzing your psychometric profile...' displays perfectly with premium UI elements ✅ Transition from mock ₹99 payment to AI generation is smooth ✅ Frontend components and layout are intact ❌ BLOCKING: AI generation fails with 502 error and 'AI returned an unexpected JSON structure' message ❌ Gemini 2.5 Pro integration not completing successfully ❌ Dashboard never loads real AI data. The frontend implementation is correct but backend AI generation API has issues preventing the complete flow from working."
 metadata:
   created_by: "main_agent"
   version: "1.0"
@@ -209,7 +215,8 @@ metadata:
 test_plan:
   current_focus:
     - "Real AI roadmap result dashboard"
-  stuck_tasks: []
+  stuck_tasks:
+    - "Real AI roadmap result dashboard"
   test_all: false
   test_priority: "high_first"
 agent_communication:
@@ -228,6 +235,11 @@ agent_communication:
   - agent: "testing"
     message: "FRONTEND E2E RE-TESTING COMPLETE ✅ ALL FLOWS FULLY VERIFIED: Comprehensive end-to-end testing confirms the complete SARATHI application is working perfectly. The full user journey from landing page through assessment, checkout, and result dashboard is seamless and production-ready. ✅ Multi-step assessment state management stable across all 3 steps ✅ Assessment submission succeeds with 201 response and transitions to checkout ✅ Mock ₹99 checkout processes successfully and transitions to result dashboard ✅ Result dashboard loads correctly with personalized AI recommendations, readiness score (96%), and complete roadmap ✅ No regression of webpack/client-boundary issues ✅ Mobile responsiveness excellent ✅ All API integrations working (assessment creation, payment processing, result retrieval) ✅ Gated access logic functions perfectly. The frontend is production-ready and the complete user experience is excellent."
   - agent: "main"
+  - agent: "main"
+    message: "User has now approved full frontend E2E testing for the new AI flow. Please test the analyzing loading state, the transition from mock payment into AI generation, and the Gemini JSON mapping on the /result dashboard."
+
     message: "Implemented real Gemini 2.5 Pro roadmap generation with EMERGENT_LLM_KEY. Please backend-test /api/generate-roadmap plus persistence to ai_analysis_result. Do not run frontend testing yet; user wants to test the AI flow themselves unless they ask otherwise."
   - agent: "testing"
     message: "AI ROADMAP BACKEND TESTING COMPLETE ✅ ALL SCENARIOS VERIFIED: Comprehensive testing of the new Gemini 2.5 Pro integration confirms all functionality working perfectly. ✅ POST /api/generate-roadmap without assessmentId returns 400 validation error ✅ POST /api/generate-roadmap for unpaid assessment returns 402 payment gate ✅ Full happy path: create assessment → mock payment → generate roadmap → verify ai_analysis_result persistence ✅ All required AI keys present in response: user_archetype, executive_summary, psychometric_profile, top_career_matches, one_year_roadmap, potential_blind_spots ✅ GET /api/results/:id returns the saved real AI payload after generation ✅ Real Gemini integration working with EMERGENT_LLM_KEY ✅ JSON validation and schema normalization working correctly ✅ AI analysis persisted to ai_analysis_result column. The AI roadmap generation API is production-ready and fully functional. 14/14 backend tests pass with 100% success rate."
+  - agent: "testing"
+    message: "AI FLOW FRONTEND TESTING COMPLETE ⚠️ CRITICAL BLOCKING ISSUE: The new AI flow frontend implementation is excellent but fails at the AI generation step. ✅ Loading state 'Analyzing your psychometric profile...' displays perfectly with premium UI and Gemini 2.5 Pro branding ✅ Smooth transition from mock ₹99 payment to AI generation ✅ Frontend components and layout are intact and ready for real AI data ❌ BLOCKING: AI generation fails with 502 error and 'AI returned an unexpected JSON structure' message ❌ Backend /api/generate-roadmap endpoint experiencing issues preventing successful completion ❌ Dashboard never loads real AI data, stuck in error state. The frontend is production-ready but backend AI integration needs immediate attention to complete the flow."
