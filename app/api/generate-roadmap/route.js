@@ -173,19 +173,20 @@ const getEmergentResponseText = async (payload) => {
 }
 
 const getGeminiResponseText = async (payload) => {
-  const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent', {
+  const modelName = 'gemini-1.5-flash'; 
+  const apiURL = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`;
+
+  const response = await fetch(apiURL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'x-goog-api-key': process.env.GEMINI_API_KEY,
     },
     body: JSON.stringify({
-      systemInstruction: {
-        parts: [{ text: SYSTEM_PROMPT }]
-      },
       contents: [{
-        role: 'user',
-        parts: [{ text: buildUserPrompt(payload) }]
+        parts: [{ 
+          text: `${SYSTEM_PROMPT}\n\nStudent Assessment Data:\n${buildUserPrompt(payload)}` 
+        }]
       }],
       generationConfig: {
         temperature: 0.7,
@@ -197,18 +198,17 @@ const getGeminiResponseText = async (payload) => {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data?.error?.message || 'Gemini API request failed');
+    throw new Error(data?.error?.message || 'Gemini API failed');
   }
 
-  const content = data?.candidates?.[0]?.content?.parts?.map((part) => part?.text || '').join('').trim();
+  const content = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
   if (!content) {
-    throw new Error('Gemini API returned an empty response');
+    throw new Error('AI returned an empty roadmap');
   }
 
   return content;
 };
-
 const generateRoadmapRaw = async (payload) => {
   if (process.env.EMERGENT_LLM_KEY) {
     return extractJson(await getEmergentResponseText(payload))
