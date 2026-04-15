@@ -174,23 +174,21 @@ const getEmergentResponseText = async (payload) => {
 
 const getGeminiResponseText = async (payload) => {
   const modelName = 'gemini-1.5-flash'; 
-  const apiURL = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent`;
+  const apiURL = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
   const response = await fetch(apiURL, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': process.env.GEMINI_API_KEY,
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       contents: [{
         parts: [{ 
-          text: `${SYSTEM_PROMPT}\n\nStudent Assessment Data:\n${buildUserPrompt(payload)}` 
+          text: `${SYSTEM_PROMPT}\n\nIMPORTANT: Return the response strictly as a valid JSON object.\n\nStudent Assessment Data:\n${buildUserPrompt(payload)}` 
         }]
       }],
       generationConfig: {
-        temperature: 0.7,
-        response_mime_type: 'application/json'
+        temperature: 0.7
       }
     })
   });
