@@ -179,7 +179,7 @@ const getGeminiResponseText = async (payload) => {
       'Content-Type': 'application/json',
       'x-goog-api-key': process.env.GEMINI_API_KEY,
     },
-  body: JSON.stringify({
+    body: JSON.stringify({
       systemInstruction: {
         parts: [{ text: SYSTEM_PROMPT }]
       },
@@ -191,19 +191,23 @@ const getGeminiResponseText = async (payload) => {
         temperature: 0.7,
         responseMimeType: 'application/json'
       }
-    });
+    })
+  });
+
+  const data = await response.json().catch(() => ({}));
+
   if (!response.ok) {
-    throw new Error(data?.error?.message || 'Gemini API request failed')
+    throw new Error(data?.error?.message || 'Gemini API request failed');
   }
 
-  const content = data?.candidates?.[0]?.content?.parts?.map((part) => part?.text || '').join('').trim()
+  const content = data?.candidates?.[0]?.content?.parts?.map((part) => part?.text || '').join('').trim();
 
   if (!content) {
-    throw new Error('Gemini API returned an empty response')
+    throw new Error('Gemini API returned an empty response');
   }
 
-  return content
-}
+  return content;
+};
 
 const generateRoadmapRaw = async (payload) => {
   if (process.env.EMERGENT_LLM_KEY) {
