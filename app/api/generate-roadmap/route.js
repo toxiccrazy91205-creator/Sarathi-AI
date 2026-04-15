@@ -173,7 +173,8 @@ const getEmergentResponseText = async (payload) => {
 }
 
 const getGeminiResponseText = async (payload) => {
-  const modelName = 'gemini-1.5-flash'; 
+  // Switching to Gemini 2.5 Flash - the most reliable model for 2026
+  const modelName = 'gemini-2.5-flash'; 
   const apiURL = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
   const response = await fetch(apiURL, {
