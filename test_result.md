@@ -188,6 +188,12 @@ frontend:
       - working: true
         agent: "main"
         comment: "Upgraded the assessment UI from 5 dummy questions to the full 60-question psychometric flow, grouped into 6 sections and rendered one question at a time so long-form completion stays manageable on mobile and desktop."
+      - working: false
+        agent: "user"
+        comment: "User reported a global state bug: answers were not persisting across any section, section progress remained at 0, and localStorage stayed empty throughout the assessment flow."
+      - working: true
+        agent: "main"
+        comment: "Fixed the assessment state bug by adding shared localStorage-backed session persistence for basic info, all 60 answers, and current step. The flow now hydrates on reload, updates persisted state as soon as answers change, drives section progress from shared state, and clears the saved session only after successful mock payment."
   - task: "Checkout and result dashboard UI"
     implemented: true
     working: true

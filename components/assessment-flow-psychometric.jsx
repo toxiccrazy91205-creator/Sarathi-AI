@@ -1,11 +1,11 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, ArrowRight, BrainCircuit, CheckCircle2, Sparkles } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 
 import SarathiLogo from '@/components/sarathi-logo'
@@ -25,6 +25,11 @@ import { Progress } from '@/components/ui/progress'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
 import { assessmentQuestions, assessmentSections } from '@/lib/psychometric-assessment'
+import {
+  buildDefaultAssessmentValues,
+  readAssessmentSession,
+  writeAssessmentSession,
+} from '@/lib/assessment-session'
 import { toast } from 'sonner'
 
 const questionSchemaShape = Object.fromEntries(
@@ -53,20 +58,26 @@ const AssessmentFlowPsychometric = () => {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(0)
   const [submitting, setSubmitting] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
 
-  const defaultQuestionValues = Object.fromEntries(
-    assessmentQuestions.map((question) => [question.id, ''])
-  )
+  const defaultFormValues = useMemo(() => buildDefaultAssessmentValues(), [])
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      college: '',
-      ...defaultQuestionValues,
-    },
+    defaultValues: defaultFormValues,
   })
+
+  const watchedValues = useWatch({
+    control: form.control,
+  })
+
+  const sharedValues = useMemo(
+    () => ({
+      ...defaultFormValues,
+      ...(watchedValues || {}),
+    }),
+    [defaultFormValues, watchedValues]
+  )
 
   const totalSteps = assessmentQuestions.length + 1
   const progressValue = useMemo(() => ((currentStep + 1) / totalSteps) * 100, [currentStep, totalSteps])
@@ -75,8 +86,34 @@ const AssessmentFlowPsychometric = () => {
     ? assessmentSections.findIndex((section) => section.id === currentQuestion.section_id)
     : -1
 
+  useEffect(() => {
+    const storedSession = readAssessmentSession()
+    form.reset(storedSession.values)
+    setCurrentStep(Math.min(Math.max(storedSession.currentStep, 0), totalSteps - 1))
+    setIsHydrated(true)
+  }, [form, totalSteps])
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return
+    }
+
+    writeAssessmentSession({
+      currentStep,
+      values: sharedValues,
+    })
+  }, [currentStep, isHydrated, sharedValues])
+
+  const updateFieldValue = (fieldName, value) => {
+    form.setValue(fieldName, value, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: false,
+    })
+  }
+
   const answeredCount = assessmentQuestions.filter((question) => {
-    const value = form.watch(question.id)
+    const value = sharedValues?.[question.id]
     return typeof value === 'string' && value.trim().length > 0
   }).length
 
@@ -141,6 +178,24 @@ const AssessmentFlowPsychometric = () => {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (!isHydrated) {
+    return (
+      <main className="min-h-screen bg-slate-50 py-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <Card className="mx-auto max-w-2xl border-slate-200 bg-white shadow-sm">
+            <CardContent className="p-8 text-center sm:p-10">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#F57D14]">Restoring session</p>
+              <h1 className="mt-3 text-2xl font-bold text-[#0A2351]">Loading your saved assessment progress...</h1>
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                SARATHI is restoring your answers, current step, and section progress from localStorage.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -258,6 +313,7 @@ const AssessmentFlowPsychometric = () => {
                       </div>
 
                       <FormField
+                        key={currentQuestion?.id}
                         control={form.control}
                         name={currentQuestion?.id}
                         render={({ field }) => (
@@ -268,6 +324,8 @@ const AssessmentFlowPsychometric = () => {
                                 <FormControl>
                                   <Textarea
                                     {...field}
+                                    value={sharedValues?.[currentQuestion?.id] ?? field.value ?? ''}
+                                    onChange={(event) => updateFieldValue(currentQuestion?.id, event.target.value)}
                                     rows={6}
                                     placeholder="Write your thoughts in a few meaningful sentences..."
                                     className="min-h-[180px] rounded-2xl border-slate-200 bg-white"
@@ -282,7 +340,11 @@ const AssessmentFlowPsychometric = () => {
                               <>
                                 <FormLabel className="text-[#0A2351]">Choose the option that fits best</FormLabel>
                                 <FormControl>
-                                  <RadioGroup value={field.value} onValueChange={field.onChange} className="space-y-3">
+                                  <RadioGroup
+                                    value={sharedValues?.[currentQuestion?.id] ?? field.value ?? ''}
+                                    onValueChange={(value) => updateFieldValue(currentQuestion?.id, value)}
+                                    className="space-y-3"
+                                  >
                                     {(currentQuestion?.options || []).map((option) => (
                                       <label
                                         key={option.value}
@@ -362,10 +424,10 @@ const AssessmentFlowPsychometric = () => {
               <CardContent className="space-y-3 text-sm text-slate-600">
                 {assessmentSections.map((section, index) => {
                   const completedInSection = section.questions.filter((question) => {
-                    const value = form.watch(question.id)
+                    const value = sharedValues?.[question.id]
                     return typeof value === 'string' && value.trim().length > 0
                   }).length
-
+                  const sectionProgressValue = Math.round((completedInSection / section.questions.length) * 100)
                   const isActive = currentQuestion?.section_id === section.id
 
                   return (
@@ -382,6 +444,7 @@ const AssessmentFlowPsychometric = () => {
                           {completedInSection}/{section.questions.length}
                         </span>
                       </div>
+                      <Progress value={sectionProgressValue} className="mt-3 h-2 bg-white/70 [&>div]:bg-[#0A2351]" />
                     </div>
                   )
                 })}

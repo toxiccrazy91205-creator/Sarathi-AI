@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { toast } from 'sonner'
 
+import { clearAssessmentSession } from '@/lib/assessment-session'
+import { assessmentQuestions } from '@/lib/psychometric-assessment'
 import SarathiLogo from '@/components/sarathi-logo'
 
 const includedItems = [
@@ -73,6 +75,7 @@ const CheckoutClient = ({ assessmentId }) => {
         throw new Error(data?.error || 'Mock payment failed')
       }
 
+      clearAssessmentSession()
       toast.success('Mock payment successful. Unlocking your dashboard...')
       router.push(`/result?id=${assessmentId}`)
     } catch (paymentError) {
@@ -130,7 +133,7 @@ const CheckoutClient = ({ assessmentId }) => {
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
                       <p className="text-sm text-slate-500">Questions answered</p>
-                      <p className="mt-2 font-semibold text-[#0A2351]">{answeredCount}/5</p>
+                      <p className="mt-2 font-semibold text-[#0A2351]">{answeredCount}/{assessmentQuestions.length}</p>
                     </div>
                   </div>
 
