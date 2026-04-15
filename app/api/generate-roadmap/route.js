@@ -245,8 +245,8 @@ export async function POST(request) {
       return jsonResponse({ error: 'assessmentId is required' }, 400)
     }
 
-    if (!process.env.EMERGENT_LLM_KEY) {
-      return jsonResponse({ error: 'Missing EMERGENT_LLM_KEY' }, 500)
+    if (!process.env.EMERGENT_LLM_KEY && !process.env.GEMINI_API_KEY) {
+      return jsonResponse({ error: 'Missing EMERGENT_LLM_KEY or GEMINI_API_KEY' }, 500)
     }
 
     const supabase = getSupabaseAdmin()

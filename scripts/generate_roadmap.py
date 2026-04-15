@@ -4,6 +4,7 @@ import os
 import sys
 from pathlib import Path
 
+import requests
 from dotenv import load_dotenv
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
@@ -60,40 +61,91 @@ def extract_json(raw_text: str):
         raise
 
 
+def build_user_text(payload: dict) -> str:
+    return (
+        "Assessment context for SARATHI:\n"
+        + json.dumps(
+            {
+                "student_profile": payload.get('student_profile', {}),
+                "assessment_context": payload.get('assessment_context', []),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n\nReturn only valid JSON matching the required structure."
+    )
+
+
+async def generate_with_emergent(payload: dict, api_key: str):
+    user_message = UserMessage(text=build_user_text(payload))
+    chat = LlmChat(
+        api_key=api_key,
+        session_id=payload.get('session_id') or f"sarathi-{payload.get('assessment_id', 'roadmap')}",
+        system_message=SYSTEM_PROMPT,
+    ).with_model('gemini', 'gemini-2.5-pro')
+    response = await chat.send_message(user_message)
+    return extract_json(response)
+
+
+def extract_gemini_text(response_json: dict) -> str:
+    candidate = (response_json.get('candidates') or [{}])[0]
+    parts = (((candidate.get('content') or {}).get('parts')) or [])
+    text_parts = [part.get('text', '') for part in parts if isinstance(part, dict)]
+    return ''.join(text_parts).strip()
+
+
+def generate_with_gemini(payload: dict, api_key: str):
+    response = requests.post(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent',
+        headers={
+            'Content-Type': 'application/json',
+            'x-goog-api-key': api_key,
+        },
+        json={
+            'system_instruction': {
+                'parts': [
+                    {
+                        'text': SYSTEM_PROMPT,
+                    }
+                ]
+            },
+            'contents': [
+                {
+                    'role': 'user',
+                    'parts': [
+                        {
+                            'text': build_user_text(payload),
+                        }
+                    ],
+                }
+            ],
+            'generationConfig': {
+                'temperature': 0.7,
+                'responseMimeType': 'application/json',
+            },
+        },
+        timeout=180,
+    )
+    response.raise_for_status()
+    response_json = response.json()
+    return extract_json(extract_gemini_text(response_json))
+
+
 async def main():
     payload_text = sys.stdin.read().strip()
     if not payload_text:
         raise ValueError('Missing input payload')
 
     payload = json.loads(payload_text)
-    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    emergent_key = os.environ.get('EMERGENT_LLM_KEY')
+    gemini_key = os.environ.get('GEMINI_API_KEY')
 
-    if not api_key:
-        raise RuntimeError('Missing EMERGENT_LLM_KEY')
-
-    user_message = UserMessage(
-        text=(
-            "Assessment context for SARATHI:\n"
-            + json.dumps(
-                {
-                    "student_profile": payload.get('student_profile', {}),
-                    "assessment_context": payload.get('assessment_context', []),
-                },
-                ensure_ascii=False,
-                indent=2,
-            )
-            + "\n\nReturn only valid JSON matching the required structure."
-        )
-    )
-
-    chat = LlmChat(
-        api_key=api_key,
-        session_id=payload.get('session_id') or f"sarathi-{payload.get('assessment_id', 'roadmap')}",
-        system_message=SYSTEM_PROMPT,
-    ).with_model('gemini', 'gemini-2.5-pro')
-
-    response = await chat.send_message(user_message)
-    structured = extract_json(response)
+    if emergent_key:
+        structured = await generate_with_emergent(payload, emergent_key)
+    elif gemini_key:
+        structured = generate_with_gemini(payload, gemini_key)
+    else:
+        raise RuntimeError('Missing EMERGENT_LLM_KEY or GEMINI_API_KEY')
 
     print(json.dumps(structured, ensure_ascii=False))
 
