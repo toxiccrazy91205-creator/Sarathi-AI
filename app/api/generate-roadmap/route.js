@@ -1,9 +1,37 @@
-import path from 'path'
-import { spawn } from 'child_process'
 import { NextResponse } from 'next/server'
 
 import { getSupabaseAdmin } from '../../../lib/supabase'
 import { assessmentQuestions } from '../../../lib/psychometric-assessment'
+
+export const runtime = 'nodejs'
+
+const SYSTEM_PROMPT = `You are an expert Career Counselor for the SARATHI App, specializing in the Indian job market. 
+Analyze the provided user answers to a 6-part psychometric assessment.
+Output a highly personalized, structured JSON response with exactly this format:
+{
+  "user_archetype": "A catchy 2-3 word title",
+  "executive_summary": "3-paragraph summary of core strengths, work style, and primary motivations",
+  "psychometric_profile": {
+    "dominant_personality_traits": ["Trait 1", "Trait 2"],
+    "core_motivators": ["Motivator 1", "Motivator 2"],
+    "learning_style": "How they best absorb information"
+  },
+  "top_career_matches": [
+    {
+      "career_title": "Specific Role",
+      "why_it_fits": "2 sentences explaining the match",
+      "starting_salary_inr": "Realistic range in INR (e.g., ₹6L - ₹12L PA)",
+      "growth_potential": "High/Medium/Low"
+    }
+  ],
+  "one_year_roadmap": {
+    "q1_focus": "Skills to learn",
+    "q2_focus": "Projects to build",
+    "q3_focus": "Networking/internships",
+    "q4_focus": "Application prep"
+  },
+  "potential_blind_spots": ["Constructive feedback on areas they might struggle"]
+}`
 
 const assessmentSelect = '*, users(id, email, name, college, created_at)'
 
@@ -64,6 +92,145 @@ const buildAssessmentContext = (row) => {
   })
 }
 
+const buildUserPrompt = (payload) => {
+  return (
+    'Assessment context for SARATHI:\n' +
+    JSON.stringify(
+      {
+        student_profile: payload?.student_profile || {},
+        assessment_context: payload?.assessment_context || [],
+      },
+      null,
+      2
+    ) +
+    '\n\nReturn only valid JSON matching the required structure.'
+  )
+}
+
+const extractJson = (rawText) => {
+  const text = String(rawText || '').trim()
+
+  if (!text) {
+    throw new Error('Empty AI response received')
+  }
+
+  let cleaned = text
+
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/, '').trim()
+  }
+
+  try {
+    return JSON.parse(cleaned)
+  } catch {
+    const start = cleaned.indexOf('{')
+    const end = cleaned.lastIndexOf('}')
+
+    if (start !== -1 && end !== -1 && end > start) {
+      return JSON.parse(cleaned.slice(start, end + 1))
+    }
+
+    throw new Error(`Unable to parse AI JSON: ${cleaned}`)
+  }
+}
+
+const getEmergentResponseText = async (payload) => {
+  const response = await fetch('https://integrations.emergentagent.com/llm/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.EMERGENT_LLM_KEY}`,
+    },
+    body: JSON.stringify({
+      model: 'gemini/gemini-2.5-pro',
+      response_format: { type: 'json_object' },
+      messages: [
+        {
+          role: 'system',
+          content: SYSTEM_PROMPT,
+        },
+        {
+          role: 'user',
+          content: buildUserPrompt(payload),
+        },
+      ],
+    }),
+  })
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    throw new Error(data?.error?.message || data?.error || 'Emergent AI request failed')
+  }
+
+  const content = data?.choices?.[0]?.message?.content
+
+  if (!content) {
+    throw new Error('Emergent AI returned an empty response')
+  }
+
+  return content
+}
+
+const getGeminiResponseText = async (payload) => {
+  const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-goog-api-key': process.env.GEMINI_API_KEY,
+    },
+    body: JSON.stringify({
+      system_instruction: {
+        parts: [
+          {
+            text: SYSTEM_PROMPT,
+          },
+        ],
+      },
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              text: buildUserPrompt(payload),
+            },
+          ],
+        },
+      ],
+      generationConfig: {
+        temperature: 0.7,
+        responseMimeType: 'application/json',
+      },
+    }),
+  })
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    throw new Error(data?.error?.message || 'Gemini API request failed')
+  }
+
+  const content = data?.candidates?.[0]?.content?.parts?.map((part) => part?.text || '').join('').trim()
+
+  if (!content) {
+    throw new Error('Gemini API returned an empty response')
+  }
+
+  return content
+}
+
+const generateRoadmapRaw = async (payload) => {
+  if (process.env.EMERGENT_LLM_KEY) {
+    return extractJson(await getEmergentResponseText(payload))
+  }
+
+  if (process.env.GEMINI_API_KEY) {
+    return extractJson(await getGeminiResponseText(payload))
+  }
+
+  throw new Error('Missing EMERGENT_LLM_KEY or GEMINI_API_KEY')
+}
+
 const toStringValue = (value, fallback = '') => {
   if (typeof value === 'string') {
     return value.trim() || fallback
@@ -107,7 +274,7 @@ const normalizeAiPayload = (analysis) => {
     }))
     .filter((item) => item.career_title && item.why_it_fits)
 
-  const normalized = {
+  return {
     user_archetype: toStringValue(analysis?.user_archetype),
     executive_summary: toStringValue(analysis?.executive_summary || analysis?.summary),
     psychometric_profile: {
@@ -124,8 +291,6 @@ const normalizeAiPayload = (analysis) => {
     },
     potential_blind_spots: toStringArray(analysis?.potential_blind_spots),
   }
-
-  return normalized
 }
 
 const validateAiPayload = (analysis) => {
@@ -150,7 +315,7 @@ const generateValidatedRoadmap = async (payload) => {
   let lastResponse = null
 
   for (let attempt = 1; attempt <= 2; attempt += 1) {
-    const rawResponse = await runGeneratorScript(payload)
+    const rawResponse = await generateRoadmapRaw(payload)
     const normalizedResponse = normalizeAiPayload(rawResponse)
     lastResponse = normalizedResponse || rawResponse
 
@@ -160,55 +325,6 @@ const generateValidatedRoadmap = async (payload) => {
   }
 
   throw new Error(`AI returned an unexpected JSON structure: ${JSON.stringify(lastResponse)}`)
-}
-
-const runGeneratorScript = (payload) => {
-  return new Promise((resolve, reject) => {
-    const scriptPath = path.join(process.cwd(), 'scripts', 'generate_roadmap.py')
-    const child = spawn('/root/.venv/bin/python3', [scriptPath], {
-      cwd: process.cwd(),
-      env: process.env,
-    })
-
-    let stdout = ''
-    let stderr = ''
-
-    const timeout = setTimeout(() => {
-      child.kill('SIGKILL')
-      reject(new Error('AI roadmap generation timed out'))
-    }, 180000)
-
-    child.stdout.on('data', (chunk) => {
-      stdout += chunk.toString()
-    })
-
-    child.stderr.on('data', (chunk) => {
-      stderr += chunk.toString()
-    })
-
-    child.on('error', (error) => {
-      clearTimeout(timeout)
-      reject(error)
-    })
-
-    child.on('close', (code) => {
-      clearTimeout(timeout)
-
-      if (code !== 0) {
-        reject(new Error(stderr || `Generator exited with code ${code}`))
-        return
-      }
-
-      try {
-        resolve(JSON.parse(stdout))
-      } catch (error) {
-        reject(new Error(`Invalid AI JSON output: ${stdout || error.message}`))
-      }
-    })
-
-    child.stdin.write(JSON.stringify(payload))
-    child.stdin.end()
-  })
 }
 
 const updateAnalysisRecord = async (supabase, assessmentId, aiAnalysis) => {
