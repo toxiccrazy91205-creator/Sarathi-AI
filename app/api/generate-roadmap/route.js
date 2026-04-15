@@ -179,23 +179,28 @@ const getGeminiResponseText = async (payload) => {
       'Content-Type': 'application/json',
       'x-goog-api-key': process.env.GEMINI_API_KEY,
     },
-    body: JSON.stringify({
-      system_instruction: {
-        parts: [
-          {
-            text: SYSTEM_PROMPT,
-          },
-        ],
+   body: JSON.stringify({
+  systemInstruction: {
+    parts: [
+      {
+        text: SYSTEM_PROMPT,
       },
-      contents: [
+    ],
+  },
+  contents: [
+    {
+      role: 'user',
+      parts: [
         {
-          role: 'user',
-          parts: [
-            {
-              text: buildUserPrompt(payload),
-            },
-          ],
+          text: buildUserPrompt(payload),
         },
+      ],
+    },
+  ],
+  generationConfig: {
+    responseMimeType: 'application/json'
+  }
+})
       ],
       generationConfig: {
         temperature: 0.7,
