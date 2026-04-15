@@ -191,7 +191,7 @@ const getGeminiResponseText = async (payload) => {
         temperature: 0.7,
         responseMimeType: 'application/json'
       }
-    })
+    });
   if (!response.ok) {
     throw new Error(data?.error?.message || 'Gemini API request failed')
   }
