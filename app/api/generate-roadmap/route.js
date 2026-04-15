@@ -174,7 +174,7 @@ const getEmergentResponseText = async (payload) => {
 
 const getGeminiResponseText = async (payload) => {
   const modelName = 'gemini-1.5-flash'; 
-  const apiURL = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`;
+  const apiURL = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent`;
 
   const response = await fetch(apiURL, {
     method: 'POST',
