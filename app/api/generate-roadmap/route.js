@@ -179,35 +179,19 @@ const getGeminiResponseText = async (payload) => {
       'Content-Type': 'application/json',
       'x-goog-api-key': process.env.GEMINI_API_KEY,
     },
-   body: JSON.stringify({
+  body: JSON.stringify({
       systemInstruction: {
-        parts: [
-          { text: SYSTEM_PROMPT }
-        ]
+        parts: [{ text: SYSTEM_PROMPT }]
       },
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            { text: buildUserPrompt(payload) }
-          ]
-        }
-      ],
+      contents: [{
+        role: 'user',
+        parts: [{ text: buildUserPrompt(payload) }]
+      }],
       generationConfig: {
         temperature: 0.7,
         responseMimeType: 'application/json'
       }
     })
-      ],
-      generationConfig: {
-        temperature: 0.7,
-        responseMimeType: 'application/json',
-      },
-    }),
-  })
-
-  const data = await response.json().catch(() => ({}))
-
   if (!response.ok) {
     throw new Error(data?.error?.message || 'Gemini API request failed')
   }
