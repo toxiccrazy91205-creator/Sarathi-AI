@@ -44,6 +44,7 @@ const questionSchemaShape = Object.fromEntries(
 const formSchema = z.object({
   name: z.string().min(2, 'Please enter your full name'),
   email: z.string().email('Please enter a valid email'),
+  phone: z.string().regex(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit phone number'),
   college: z.string().min(2, 'Please enter your college name'),
   ...questionSchemaShape,
 })
@@ -119,7 +120,7 @@ const AssessmentFlowPsychometric = () => {
 
   const validateCurrentStep = async () => {
     if (currentStep === 0) {
-      return form.trigger(['name', 'email', 'college'])
+      return form.trigger(['name', 'email', 'phone', 'college'])
     }
 
     if (!currentQuestion) {
@@ -160,6 +161,7 @@ const AssessmentFlowPsychometric = () => {
         body: JSON.stringify({
           name: values.name,
           email: values.email,
+          phone: values.phone,
           college: values.college,
           answers_json: answersJson,
         }),
@@ -282,6 +284,20 @@ const AssessmentFlowPsychometric = () => {
                             <FormLabel className="text-[#0A2351]">Email</FormLabel>
                             <FormControl>
                               <Input {...field} placeholder="you@example.com" className="h-11 rounded-xl border-slate-200" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-[#0A2351]">Phone Number</FormLabel>
+                            <FormControl>
+                              <Input {...field} type="tel" maxLength={10} placeholder="e.g. 9876543210" className="h-11 rounded-xl border-slate-200" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
