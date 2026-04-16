@@ -115,7 +115,7 @@ const AssessmentFlowPsychometric = () => {
     }
   }
 
-  const handleNext = () => {
+ const handleNext = () => {
     if (!completedSteps.includes(absoluteStep)) {
       setCompletedSteps([...completedSteps, absoluteStep])
     }
@@ -126,7 +126,9 @@ const AssessmentFlowPsychometric = () => {
       updateSection(nextStep)
       setTextResponse("") 
     } else {
-      router.push('/result?id=demo-locked')
+      // 🚀 FIX: This ensures the user goes to the dashboard after the final question
+      // Using 'demo-unlocked' or a specific ID helps the Result page know to show the data
+      router.push('/result?id=demo-ready')
     }
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
