@@ -171,8 +171,10 @@ const AssessmentFlowPsychometric = () => {
         throw new Error(data?.error || 'Unable to create assessment')
       }
 
-      toast.success('Assessment saved. Redirecting to checkout...')
-      router.push(`/checkout?assessmentId=${data?.assessment?.id}`)
+     toast.success('Assessment saved. Generating your premium roadmap...')
+      // 🚀 DEMO BYPASS: Skipping the checkout page for B2B college demos
+      // Notice we are using ?id= instead of ?assessmentId= to match your result page's expectations
+      router.push(`/result?id=${data?.assessment?.id}`)
     } catch (error) {
       toast.error(error?.message || 'Something went wrong while saving your assessment.')
     } finally {
