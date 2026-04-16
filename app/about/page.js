@@ -15,7 +15,6 @@ const AboutPage = () => {
               Back to home
             </Link>
           </Button>
-          <SarathiLogo href="/" imageClassName="h-12 w-auto" />
         </nav>
 
         <div className="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-slate-200">
