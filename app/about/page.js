@@ -9,13 +9,6 @@ const AboutPage = () => {
     <main className="min-h-screen bg-slate-50 py-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
         <nav className="mb-8 flex items-center justify-between">
-          <Button asChild variant="ghost" className="px-0 text-slate-500 hover:bg-transparent hover:text-[#0A2351]">
-            <Link href="/">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to home
-            </Link>
-          </Button>
-        </nav>
 
         <div className="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-slate-200">
           <h1 className="text-4xl font-extrabold text-[#0A2351] mb-8">About SARATHI</h1>
