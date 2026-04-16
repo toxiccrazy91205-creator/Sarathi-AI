@@ -13,7 +13,6 @@ const steps = [
   },
   {
     title: 'Unlock your result for ₹99',
-    // FIXED: Removed mock checkout text
     description: 'Securely process your ₹99 assessment fee to instantly generate your premium AI career insights.',
     icon: BadgeIndianRupee,
   },
@@ -116,7 +115,6 @@ const App = () => {
                     ))}
                   </div>
                   <div className="rounded-xl border border-dashed border-[#0A2351]/15 bg-[#0A2351]/[0.03] p-4 text-sm text-slate-600">
-                    {/* FIXED: Removed the internal payment validation text */}
                     Your complete, interactive career dashboard and step-by-step personalized roadmap are unlocked instantly upon completing the assessment.
                   </div>
                 </div>
@@ -131,7 +129,6 @@ const App = () => {
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#F57D14]">How it Works</p>
           <h2 className="mt-3 text-3xl font-bold text-[#0A2351] sm:text-4xl">A focused 3-step journey from uncertainty to direction</h2>
           <p className="mt-4 text-base leading-7 text-slate-600">
-            {/* FIXED: Removed SaaS Funnel text */}
             A seamless, guided journey from taking your initial assessment to unlocking deep career clarity.
           </p>
         </div>
@@ -179,7 +176,6 @@ const App = () => {
                 {
                   icon: ShieldCheck,
                   title: 'Built to feel premium from day one',
-                  // FIXED: Removed the "structured like a real SaaS product you can iterate quickly" developer note
                   description: 'A seamless, secure platform designed to give students a world-class, professional career planning experience.',
                 },
               ].map((item) => {
@@ -204,8 +200,25 @@ const App = () => {
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#F57D14]">Ready to explore?</p>
               <h3 className="mt-3 text-2xl font-bold text-[#0A2351]">Start your SARATHI assessment in under 4 minutes</h3>
               <p className="mt-3 text-sm leading-6 text-slate-600">
-                {/* FIXED: Removed the massive DUMMY AI admission text */}
                 SARATHI uses advanced AI to analyze your psychometric profile and generate a highly personalized, actionable 5-year career roadmap.
               </p>
               <div className="mt-6 rounded-2xl bg-slate-50 p-5">
-                <p className="text-sm font-medium text-slate
+                <p className="text-sm font-medium text-slate-500">What you unlock</p>
+                <ul className="mt-4 space-y-3 text-sm text-slate-700">
+                  <li className="flex gap-3"><CheckCircle2 className="mt-0.5 h-4 w-4 text-[#F57D14]" /> Top career matches with fit score</li>
+                  <li className="flex gap-3"><CheckCircle2 className="mt-0.5 h-4 w-4 text-[#F57D14]" /> Strength summary and readiness score</li>
+                  <li className="flex gap-3"><CheckCircle2 className="mt-0.5 h-4 w-4 text-[#F57D14]" /> Next 30/90 day roadmap with career assets to build</li>
+                </ul>
+              </div>
+              <Button asChild size="lg" className="mt-6 w-full bg-[#F57D14] text-white hover:bg-[#dd6f11]">
+                <Link href="/assessment">Take the Test - ₹99</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    </main>
+  )
+}
+
+export default App
