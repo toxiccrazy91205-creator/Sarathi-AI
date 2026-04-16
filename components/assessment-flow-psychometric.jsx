@@ -207,12 +207,7 @@ const AssessmentFlowPsychometric = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <Button asChild variant="ghost" className="mb-3 px-0 text-slate-500 hover:bg-transparent hover:text-[#0A2351]">
-              <Link href="/">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to home
-              </Link>
-            </Button>
+            
             <div className="mt-4 inline-flex items-center rounded-full border border-[#0A2351]/10 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#0A2351] shadow-sm">
               60-Question Psychometric Assessment
             </div>
