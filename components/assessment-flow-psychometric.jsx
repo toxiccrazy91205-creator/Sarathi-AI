@@ -11,40 +11,47 @@ import SarathiLogo from '@/components/sarathi-logo'
 const AssessmentFlowPsychometric = () => {
   const router = useRouter()
   
-  // State management
-  const [currentSection, setCurrentSection] = useState(0) // 0: Basic Info, 1-6: Psychometric Sections
-  const [stepInSection, setStepInSection] = useState(1)
+  // 0: Basic Info Form, 1-6: Psychometric Sections
+  const [currentSection, setCurrentSection] = useState(0) 
+  const [absoluteStep, setAbsoluteStep] = useState(1)
   
   const sections = [
-    { name: "Basic Information", total: 5 }, // Name, WhatsApp, College, Year, Stream
-    { name: "Personality Traits", total: 10 },
-    { name: "Career Interests", total: 10 },
-    { name: "Aptitude & Skills", total: 10 },
-    { name: "Motivation Factors", total: 10 },
-    { name: "Work Behaviour", total: 10 },
-    { name: "Open Reflections", total: 10 }
+    { name: "Basic Information", questions: 1 }, // Handled as a single form
+    { name: "Personality Traits", questions: 10 },
+    { name: "Career Interests", questions: 10 },
+    { name: "Aptitude & Skills", questions: 10 },
+    { name: "Motivation Factors", questions: 10 },
+    { name: "Work Behaviour", questions: 10 },
+    { name: "Open Reflections", questions: 10 }
   ]
 
-  const totalSteps = sections.reduce((acc, s) => acc + s.total, 0)
-  const [absoluteStep, setAbsoluteStep] = useState(1)
+  const totalSteps = sections.reduce((acc, s) => acc + s.questions, 0)
 
   const handleNext = () => {
-    if (absoluteStep < totalSteps) {
-      setAbsoluteStep(prev => prev + 1)
-      
-      // Logic to move between sections
-      if (stepInSection < sections[currentSection].total) {
-        setStepInSection(prev => prev + 1)
-      } else {
-        setCurrentSection(prev => prev + 1)
-        setStepInSection(1)
-      }
-      
-      // Auto-scroll to top of card on move
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+    if (currentSection === 0) {
+      // Logic to jump from the Basic Info form to the first Psychometric question
+      setCurrentSection(1)
+      setAbsoluteStep(2)
     } else {
-      router.push('/result?id=demo-locked')
+      // Logic for moving through psychometric questions
+      if (absoluteStep < totalSteps) {
+        setAbsoluteStep(prev => prev + 1)
+        
+        // Check if we need to advance to the next section name
+        const stepsCompleted = absoluteStep
+        let count = 0
+        for (let i = 0; i < sections.length; i++) {
+          count += sections[i].questions
+          if (stepsCompleted === count) {
+            setCurrentSection(i + 1)
+            break
+          }
+        }
+      } else {
+        router.push('/result?id=demo-locked')
+      }
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const progress = (absoluteStep / totalSteps) * 100
@@ -57,7 +64,7 @@ const AssessmentFlowPsychometric = () => {
         <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex-1">
             <div className="mb-4 inline-flex items-center rounded-full border border-[#0A2351]/10 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#0A2351] shadow-sm">
-              6-Section Professional Assessment
+              Professional Career Assessment
             </div>
             <h1 className="text-3xl font-bold text-[#0A2351] sm:text-4xl">Discover your strongest career direction</h1>
           </div>
@@ -68,8 +75,12 @@ const AssessmentFlowPsychometric = () => {
           <Card className="overflow-hidden border-slate-200 bg-white shadow-xl shadow-slate-200/50">
             <div className="bg-[#0A2351] px-6 py-4 text-white sm:px-8">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium opacity-80">Section {currentSection + 1}: {sections[currentSection].name}</span>
-                <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">Step {absoluteStep} of {totalSteps}</span>
+                <span className="text-sm font-medium opacity-80">
+                  Section {currentSection + 1}: {sections[currentSection]?.name || "Finalizing"}
+                </span>
+                <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">
+                  Step {absoluteStep} of {totalSteps}
+                </span>
               </div>
               <Progress value={progress} className="mt-4 h-1.5 bg-white/20" indicatorClassName="bg-[#F57D14]" />
             </div>
@@ -77,15 +88,14 @@ const AssessmentFlowPsychometric = () => {
             <CardContent className="p-6 sm:p-10">
               <div className="mx-auto max-w-xl">
                 
-                {/* DYNAMIC CONTENT BASED ON SECTION */}
+                {/* DYNAMIC CONTENT */}
                 {currentSection === 0 ? (
                   <div className="space-y-6">
                     <div className="mb-8">
                       <h3 className="text-xl font-bold text-[#0A2351]">Tell us who you are</h3>
-                      <p className="text-sm text-slate-500">This helps SARATHI tailor the roadmap to your specific background.</p>
+                      <p className="text-sm text-slate-500 italic">This data helps the SARATHI AI generate a personalized 5-year roadmap for you.</p>
                     </div>
                     
-                    {/* ALL PREVIOUS FIELDS RESTORED */}
                     <div className="space-y-4">
                       <div>
                         <label className="text-sm font-semibold text-[#0A2351]">Full Name</label>
@@ -116,30 +126,33 @@ const AssessmentFlowPsychometric = () => {
                         </div>
                       </div>
                     </div>
+
+                    <div className="mt-10 flex justify-end">
+                      <Button onClick={handleNext} className="h-12 rounded-xl bg-[#F57D14] px-8 font-bold text-white hover:bg-[#dd6f11]">
+                        Continue to Questions <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-8 py-4">
                     <div className="space-y-3">
-                      <h3 className="text-lg font-bold text-[#0A2351]">Question {absoluteStep - sections[0].total}</h3>
-                      <p className="text-base text-slate-700">How comfortable are you with working in a fast-paced startup environment?</p>
+                      <h3 className="text-lg font-bold text-[#0A2351]">Question {absoluteStep - 1}</h3>
+                      <p className="text-base text-slate-700 leading-relaxed">
+                        Based on your interest in {sections[currentSection].name}, how likely are you to pursue a leadership role in this field?
+                      </p>
                     </div>
                     
-                    {/* Placeholder for Psychometric Options */}
                     <div className="grid gap-3">
                       {['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'].map((opt) => (
-                        <button key={opt} onClick={handleNext} className="w-full rounded-xl border border-slate-200 p-4 text-left text-sm transition-all hover:border-[#F57D14] hover:bg-[#F57D14]/5">
+                        <button 
+                          key={opt} 
+                          onClick={handleNext} 
+                          className="w-full rounded-xl border border-slate-200 p-4 text-left text-sm font-medium transition-all hover:border-[#F57D14] hover:bg-[#F57D14]/5 hover:text-[#F57D14]"
+                        >
                           {opt}
                         </button>
                       ))}
                     </div>
-                  </div>
-                )}
-
-                {currentSection === 0 && (
-                  <div className="mt-10 flex justify-end">
-                    <Button onClick={handleNext} className="h-12 rounded-xl bg-[#F57D14] px-8 font-bold text-white hover:bg-[#dd6f11]">
-                      Continue to Questions <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
                   </div>
                 )}
               </div>
@@ -155,23 +168,29 @@ const AssessmentFlowPsychometric = () => {
                     <ClipboardCheck className="h-5 w-5 text-[#F57D14]" />
                   </div>
                   <div>
-                    <p className="text-xs uppercase tracking-wider text-white/60">Assessment Details</p>
-                    <p className="font-bold">60 Scientific Questions</p>
+                    <p className="text-xs uppercase tracking-wider text-white/60">Scientific Method</p>
+                    <p className="font-bold text-sm">6-Section Analysis</p>
                   </div>
                 </div>
                 <div className="mt-6 space-y-4">
                   {sections.slice(1).map((s, i) => (
-                    <div key={s.name} className={`flex items-center gap-3 text-sm ${currentSection > i ? 'text-white' : 'text-white/50'}`}>
-                      <CheckCircle2 className={`h-4 w-4 shrink-0 ${currentSection > i ? 'text-[#F57D14]' : 'text-white/20'}`} />
-                      <span>{s.name}</span>
+                    <div key={s.name} className={`flex items-center gap-3 text-sm transition-opacity ${currentSection > i ? 'opacity-100' : 'opacity-40'}`}>
+                      <CheckCircle2 className={`h-4 w-4 shrink-0 ${currentSection > i ? 'text-[#F57D14]' : 'text-white'}`} />
+                      <span className={currentSection === i + 1 ? "font-bold text-[#F57D14]" : ""}>{s.name}</span>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
+            
             <div className="rounded-2xl border border-[#0A2351]/10 bg-white p-6 shadow-sm">
-              <div className="flex items-center gap-1 text-[#F57D14]"><Star className="h-4 w-4 fill-current" /><Star className="h-4 w-4 fill-current" /><Star className="h-4 w-4 fill-current" /><Star className="h-4 w-4 fill-current" /><Star className="h-4 w-4 fill-current" /></div>
-              <p className="mt-4 text-sm italic text-slate-600">"The depth of the 6 sections gave me a roadmap I actually trust."</p>
+              <div className="flex items-center gap-1 text-[#F57D14]">
+                {[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
+              </div>
+              <p className="mt-4 text-sm italic leading-relaxed text-slate-600">
+                "The SARATHI assessment gave me a clear direction when I was confused between MBA and Data Science."
+              </p>
+              <p className="mt-4 text-xs font-bold text-[#0A2351]">— Aditi S., Final Year Student</p>
             </div>
           </aside>
         </div>
