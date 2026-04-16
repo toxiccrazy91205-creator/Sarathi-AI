@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
-    <footer style={{ padding: '20px', borderTop: '1px solid #eaeaea', textAlign: 'center', marginTop: '50px' }}>
-      <p>© 2026 Sarthi AI Platform | Empowering Careers in India</p>
+    <footer className="py-6 text-center text-sm text-slate-500 bg-slate-50">
+      <p>&copy; {new Date().getFullYear()} SARATHI Platform | Empowering Careers in India</p>
     </footer>
   );
 }
