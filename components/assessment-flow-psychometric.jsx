@@ -213,7 +213,6 @@ const AssessmentFlowPsychometric = () => {
                 Back to home
               </Link>
             </Button>
-            <SarathiLogo href="/" imageClassName="h-20 w-auto" />
             <div className="mt-4 inline-flex items-center rounded-full border border-[#0A2351]/10 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#0A2351] shadow-sm">
               60-Question Psychometric Assessment
             </div>
