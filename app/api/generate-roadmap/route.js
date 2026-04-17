@@ -65,7 +65,7 @@ async function generateValidatedRoadmap(promptData) {
   
   // Using Flash for real-time mobile performance
   const model = genAI.getGenerativeModel({ 
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5-flash', // 🚀 The newest, active model
     systemInstruction: SYSTEM_PROMPT,
     generationConfig: {
       responseMimeType: "application/json", // Forces perfect JSON output
