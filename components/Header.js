@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+// 🚀 NEW: We import the logo component directly from your files!
+import SarathiLogo from './sarathi-logo' 
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -12,18 +14,18 @@ export default function Header() {
     <header className="border-b border-slate-100 bg-white sticky top-0 z-50">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
         
-        {/* 🚀 FIXED: The Image Logo */}
+        {/* 🚀 FIXED: Using your custom JSX Logo Component */}
         <div className="flex items-center gap-2">
           <Link href="/">
-            {/* Change "/sarathi-logo.png" to your actual logo filename if it is different */}
-            <img src="/sarathi-logo.png" alt="SARATHI Logo" className="h-12 w-auto" />
+            <div className="h-12 w-auto flex items-center">
+               <SarathiLogo />
+            </div>
           </Link>
         </div>
 
         {/* 💻 Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-600">
           <Link href="/" className="hover:text-[#F57D14] transition-colors">Home</Link>
-          {/* 🚀 FIXED: Using Anchor Links for smooth scrolling */}
           <Link href="/#methodology" className="hover:text-[#F57D14] transition-colors">About SARATHI</Link>
           <Link href="/#methodology" className="hover:text-[#F57D14] transition-colors">Methodology</Link>
           <Link href="/#institutions" className="hover:text-[#F57D14] transition-colors">For Institutions</Link>
