@@ -29,11 +29,11 @@ Output a highly personalized, structured JSON response with exactly this format:
       "growth_potential": "High/Medium/Low"
     }
   ],
-  "one_year_roadmap": {
-    "q1_focus": "Specific technical or soft skills to learn",
-    "q2_focus": "Tangible projects or portfolios to build",
-    "q3_focus": "Networking strategies or internship targets",
-    "q4_focus": "Application prep and placement strategy"
+  "five_year_vision": {
+    "q1_focus": "Immediate skill-up & certifications",
+    "q2_focus": "Portfolio & project building",
+    "q3_focus": "Internships & networking",
+    "q4_focus": "Final placement & long-term career launch"
   },
   "potential_blind_spots": ["Constructive feedback on areas where they might struggle based on their profile"]
 }`
