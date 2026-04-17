@@ -38,67 +38,14 @@ const ResultDashboardReal = ({ assessmentId }) => {
 
   useEffect(() => {
     const loadResult = async () => {
-      // 1. Check for locked state
-      if (!assessmentId || assessmentId === 'demo-locked') {
-        setLocked(true)
+      // 1. Check for missing or locked ID
+      if (!assessmentId) {
+        setError('No assessment ID provided.')
         setLoading(false)
         return
       }
 
-      // 🚀 2. NEW: Handle the 'demo-ready' state with high-quality mock data
-      if (assessmentId === 'demo-ready') {
-        setAnalyzing(true)
-        // Simulate AI thinking for a better demo experience
-        setTimeout(() => {
-          setAssessment({
-            user: { name: "Harshendra Singh" },
-            ai_analysis: {
-              user_archetype: "The Strategic Architect",
-              executive_summary: "Based on your responses, you possess a rare blend of technical curiosity and leadership potential. You excel in environments where you can bridge the gap between complex software systems and human-centric solutions. Your aptitude for deep analysis suggests a natural fit for high-level project management or specialized engineering roles.",
-              top_career_matches: [
-                {
-                  career_title: "Technical Product Manager",
-                  why_it_fits: "Combines your leadership traits with your interest in technology roadmaps.",
-                  starting_salary_inr: "₹12L - ₹18L per annum",
-                  growth_potential: "High"
-                },
-                {
-                  career_title: "UX Research Lead",
-                  why_it_fits: "Leverages your ability to understand human behavior and solve abstract problems.",
-                  starting_salary_inr: "₹10L - ₹15L per annum",
-                  growth_potential: "Very High"
-                },
-                {
-                  career_title: "Full-Stack AI Developer",
-                  why_it_fits: "Utilizes your logical aptitude and interest in building digital tools.",
-                  starting_salary_inr: "₹14L - ₹22L per annum",
-                  growth_potential: "Explosive"
-                }
-              ],
-              psychometric_profile: {
-                dominant_personality_traits: ["Strategic", "Analytical", "Adaptable"],
-                core_motivators: ["Innovation", "Leadership", "Financial Growth"],
-                learning_style: "You learn best by visualizing frameworks and applying them to real-world B2B scenarios."
-              },
-              potential_blind_spots: [
-                "May over-analyze simple decisions, leading to slower execution.",
-                "High independence might lead to isolation in collaborative environments."
-              ],
-              one_year_roadmap: {
-                q1_focus: "Complete specialized certification in Agile PM or UI/UX Design.",
-                q2_focus: "Build a portfolio of 3 real-world projects demonstrating bridge-thinking.",
-                q3_focus: "Network with senior leaders in the Lucknow and Delhi startup ecosystems.",
-                q4_focus: "Target 5-year leadership track roles in educational tech or AI startups."
-              }
-            }
-          })
-          setAnalyzing(false)
-          setLoading(false)
-        }, 2000)
-        return
-      }
-
-      // 3. Normal Database Fetch Logic
+      // 🚀 2. Normal Database Fetch Logic (100% Dynamic)
       try {
         const response = await fetch(`/api/results/${assessmentId}`)
         const data = await response.json()
@@ -115,11 +62,14 @@ const ResultDashboardReal = ({ assessmentId }) => {
 
         const currentAssessment = data?.assessment
 
+        // If the AI has already generated the roadmap, display it!
         if (hasRealAiAnalysis(currentAssessment?.ai_analysis)) {
           setAssessment(currentAssessment)
+          setLoading(false)
           return
         }
 
+        // If not, tell the API to ask Gemini to generate it right now!
         setAnalyzing(true)
         const roadmapResponse = await fetch('/api/generate-roadmap', {
           method: 'POST',
@@ -129,6 +79,7 @@ const ResultDashboardReal = ({ assessmentId }) => {
 
         const roadmapData = await roadmapResponse.json()
         if (!roadmapResponse.ok) throw new Error(roadmapData?.error || 'Unable to generate AI roadmap')
+        
         setAssessment(roadmapData?.assessment)
       } catch (fetchError) {
         setError(fetchError?.message || 'Unable to load result dashboard.')
@@ -169,7 +120,7 @@ const ResultDashboardReal = ({ assessmentId }) => {
               <div>
                 <h1 className="text-2xl font-bold text-[#0A2351] sm:text-3xl">Analyzing your psychometric profile...</h1>
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-                  SARATHI is generating your roadmap with Gemini 2.5 Pro based on your {assessmentId === 'demo-ready' ? 'demo' : 'submitted'} answers.
+                  SARATHI is generating your personalized roadmap with Gemini 2.5 Pro based on your unique answers.
                 </p>
               </div>
             </CardContent>
@@ -179,7 +130,7 @@ const ResultDashboardReal = ({ assessmentId }) => {
     )
   }
 
-  if (error && assessmentId !== 'demo-ready') {
+  if (error) {
     return (
       <main className="min-h-screen bg-slate-50 py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -210,12 +161,12 @@ const ResultDashboardReal = ({ assessmentId }) => {
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-[#F57D14]/10 text-[#F57D14]">
                 <LockKeyhole className="h-8 w-8" />
               </div>
-              <h1 className="mt-6 text-3xl font-bold text-[#0A2351]">Your result dashboard is still locked</h1>
+              <h1 className="mt-6 text-3xl font-bold text-[#0A2351]">Your result dashboard is locked</h1>
               <p className="mt-4 text-sm leading-6 text-slate-600 sm:text-base">
                 Complete the checkout to access your full AI-generated roadmap.
               </p>
               <Button asChild className="mt-6 bg-[#F57D14] text-white hover:bg-[#dd6f11]">
-                <Link href={assessmentId && assessmentId !== 'demo-locked' ? `/checkout?assessmentId=${assessmentId}` : '/assessment'}>
+                <Link href={`/checkout?assessmentId=${assessmentId}`}>
                   Go to Checkout
                 </Link>
               </Button>
@@ -229,17 +180,7 @@ const ResultDashboardReal = ({ assessmentId }) => {
   return (
     <main className="min-h-screen bg-slate-50 py-8 print:bg-white print:py-0">
       <div className="container mx-auto space-y-6 px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4 print:hidden">
-          <Button asChild variant="ghost" className="mb-4 px-0 text-slate-500 hover:bg-transparent hover:text-[#0A2351]">
-            <Link href={assessmentId === 'demo-ready' ? "/" : `/checkout?assessmentId=${assessmentId}`}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {assessmentId === 'demo-ready' ? "Back to Home" : "Back to Checkout"}
-            </Link>
-          </Button>
-          {/* 🚀 Header Logo Increased for Demo Prominence */}
-          <SarathiLogo href="/" imageClassName="h-16 w-auto sm:h-24" />
-        </div>
-
+        
         <div className="grid gap-6 xl:grid-cols-[1fr_0.38fr]">
           <div className="space-y-6">
             <Card className="border-0 bg-[#0A2351] text-white shadow-xl shadow-[#0A2351]/10">
