@@ -4,7 +4,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-// 🚀 NEW: We import the logo component directly from your files!
 import SarathiLogo from './sarathi-logo' 
 
 export default function Header() {
@@ -12,13 +11,23 @@ export default function Header() {
 
   return (
     <header className="border-b border-slate-100 bg-white sticky top-0 z-50">
-      <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto flex h-24 items-center justify-between px-4 sm:px-6 lg:px-8">
         
-        {/* 🚀 FIXED: Using your custom JSX Logo Component */}
-        <div className="flex items-center gap-2">
-          <Link href="/">
-            <div className="h-12 w-auto flex items-center">
+        {/* 🚀 STRIP-STYLE LOGO WITH TAGLINE */}
+        <div className="flex items-center">
+          <Link href="/" className="flex items-center gap-4 sm:gap-5">
+            {/* The Logo - Increased to h-16/h-20 for bigger size */}
+            <div className="h-16 sm:h-20 w-auto flex items-center">
                <SarathiLogo />
+            </div>
+            
+            {/* Vertical Divider Line (Hidden on tiny screens) */}
+            <div className="hidden sm:block h-10 w-[2px] bg-slate-200"></div>
+            
+            {/* Empowering Tagline (Hidden on tiny screens) */}
+            <div className="hidden sm:flex flex-col justify-center pt-1">
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-slate-400 leading-tight">Empowering</span>
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-slate-400 leading-tight">Student Clarity</span>
             </div>
           </Link>
         </div>
@@ -34,7 +43,7 @@ export default function Header() {
 
         {/* 💻 Desktop Button */}
         <div className="hidden md:block">
-          <Button asChild className="rounded-full bg-[#0A2351] px-6 font-bold text-white hover:bg-[#0A2351]/90 shadow-md shadow-[#0A2351]/10">
+          <Button asChild className="rounded-full bg-[#0A2351] px-6 h-12 font-bold text-white hover:bg-[#0A2351]/90 shadow-md shadow-[#0A2351]/10">
             <Link href="/assessment">Take the Test</Link>
           </Button>
         </div>
