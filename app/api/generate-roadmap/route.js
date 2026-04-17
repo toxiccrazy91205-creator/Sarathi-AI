@@ -3,6 +3,7 @@ import { getSupabaseAdmin } from '../../../lib/supabase'
 import { assessmentQuestions } from '../../../lib/psychometric-assessment'
 
 export const runtime = 'nodejs'
+export const maxDuration = 60 // 🚀 ADD THIS: Tells Vercel to allow up to 60 seconds'
 
 const SYSTEM_PROMPT = `You are an expert Career Counselor for the SARATHI App. 
 Your goal is to provide a 5-year strategic transformation roadmap for an Indian college student.
