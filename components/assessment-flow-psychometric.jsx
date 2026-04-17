@@ -10,9 +10,12 @@ import { Progress } from '@/components/ui/progress'
 const AssessmentFlowPsychometric = () => {
   const router = useRouter()
   
+  // 🚀 NEW: Separate state to track if the pre-assessment form is done
+  const [isFormCompleted, setIsFormCompleted] = useState(false)
+  
   // State Management
   const [currentSection, setCurrentSection] = useState(0) 
-  const [absoluteStep, setAbsoluteStep] = useState(1)
+  const [absoluteStep, setAbsoluteStep] = useState(1) // Now strictly counts 1 to 60
   const [textResponse, setTextResponse] = useState("")
   
   // Form State for Mandatory Validation
@@ -22,12 +25,10 @@ const AssessmentFlowPsychometric = () => {
     college: ""
   })
 
-  // Track completed questions for the Grid
   const [completedSteps, setCompletedSteps] = useState([])
 
-  // Section configuration from your psychometric document [cite: 1, 18, 32, 44, 56, 66]
+  // 🚀 FIXED: Removed "Basic Information" so Personality Traits is Section 1
   const sections = [
-    { name: "Basic Information", questions: 1 }, 
     { name: "Personality Traits", questions: 15 },
     { name: "Career Interests", questions: 12 },
     { name: "Aptitude Indicators", questions: 10 },
@@ -36,7 +37,6 @@ const AssessmentFlowPsychometric = () => {
     { name: "Open Reflections", questions: 5 }
   ]
 
-  // Full question bank from your doc [cite: 3-72]
   const questionBank = [
     "I enjoy solving problems that require deep thinking and analysis.",
     "I like having a clear plan and structure for my daily tasks.",
@@ -100,10 +100,8 @@ const AssessmentFlowPsychometric = () => {
     "Would you prefer building your career in India, abroad, or both? Why?"
   ]
 
-  const totalSteps = questionBank.length + 1
+  const totalSteps = questionBank.length // Now exactly 60
   const progress = (absoluteStep / totalSteps) * 100
-
-  // Form Validation Logic
   const isFormValid = formData.name.trim() !== "" && formData.whatsapp.length >= 10 && formData.college.trim() !== ""
 
   const updateSection = (step) => {
@@ -117,8 +115,13 @@ const AssessmentFlowPsychometric = () => {
     }
   }
 
+  // 🚀 NEW: Function just to handle moving from Form -> Question 1
+  const handleStartTest = () => {
+    setIsFormCompleted(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const handleNext = () => {
-    // Track completion for the visual grid
     if (!completedSteps.includes(absoluteStep)) {
       setCompletedSteps([...completedSteps, absoluteStep])
     }
@@ -129,7 +132,6 @@ const AssessmentFlowPsychometric = () => {
       updateSection(nextStep)
       setTextResponse("") 
     } else {
-      // 🚀 SUCCESS: Bypasses the lock loop by passing the 'demo-ready' flag
       router.push('/result?id=demo-ready')
     }
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -140,6 +142,9 @@ const AssessmentFlowPsychometric = () => {
       const prevStep = absoluteStep - 1
       setAbsoluteStep(prevStep)
       updateSection(prevStep)
+    } else {
+      // 🚀 Allow user to go back to the basic info form from question 1
+      setIsFormCompleted(false)
     }
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -149,24 +154,32 @@ const AssessmentFlowPsychometric = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
           <Card className="overflow-hidden border-slate-200 bg-white shadow-xl">
+            
             {/* PROGRESS HEADER */}
             <div className="bg-[#0A2351] px-6 py-4 text-white">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium opacity-80">
-                   Section {currentSection + 1}: {sections[currentSection]?.name}
-                </span>
-                <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">
-                   Step {absoluteStep} of {totalSteps}
-                </span>
-              </div>
-              <Progress value={progress} className="mt-4 h-1.5 bg-white/20" indicatorClassName="bg-[#F57D14]" />
+              {!isFormCompleted ? (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium opacity-80">Student Profile Setup</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">Pre-Assessment</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium opacity-80">
+                     Section {currentSection + 1}: {sections[currentSection]?.name}
+                  </span>
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">
+                     Step {absoluteStep} of {totalSteps}
+                  </span>
+                </div>
+              )}
+              <Progress value={!isFormCompleted ? 0 : progress} className="mt-4 h-1.5 bg-white/20" indicatorClassName="bg-[#F57D14]" />
             </div>
 
             <CardContent className="p-6 sm:p-10">
               <div className="mx-auto max-w-xl">
                 
-                {/* SECTION 0: MANDATORY PERSONAL DETAILS */}
-                {currentSection === 0 ? (
+                {!isFormCompleted ? (
+                  /* ---------------- STUDENT FORM ---------------- */
                   <div className="space-y-6">
                     <h3 className="text-xl font-bold text-[#0A2351]">Tell us who you are</h3>
                     <div className="space-y-4">
@@ -194,7 +207,7 @@ const AssessmentFlowPsychometric = () => {
                     </div>
                     <div className="flex justify-end pt-4">
                       <Button 
-                        onClick={handleNext} 
+                        onClick={handleStartTest} 
                         disabled={!isFormValid}
                         className={`h-12 rounded-xl px-8 font-bold text-white transition-all ${isFormValid ? 'bg-[#F57D14] hover:bg-[#dd6f11]' : 'bg-slate-300 cursor-not-allowed'}`}
                       >
@@ -203,12 +216,12 @@ const AssessmentFlowPsychometric = () => {
                     </div>
                     {!isFormValid && <p className="text-right text-[10px] text-slate-400 mt-2">* These fields are required to generate your personalized roadmap</p>}
                   </div>
-                ) : currentSection === 6 ? (
-                  /* SECTION 6: OPEN REFLECTIONS [cite: 66-72] */
+                ) : currentSection === 5 ? (
+                  /* ---------------- OPEN REFLECTIONS (Section 6) ---------------- */
                   <div className="space-y-8 py-4">
                     <div className="space-y-3">
                       <h3 className="text-lg font-bold text-[#0A2351]">Self-Reflection</h3>
-                      <p className="text-base text-slate-700 font-medium leading-relaxed">{questionBank[absoluteStep - 2]}</p>
+                      <p className="text-base text-slate-700 font-medium leading-relaxed">{questionBank[absoluteStep - 1]}</p>
                     </div>
                     <textarea 
                       value={textResponse}
@@ -226,19 +239,19 @@ const AssessmentFlowPsychometric = () => {
                     </div>
                   </div>
                 ) : (
-                  /* SECTIONS 1-5: MULTIPLE CHOICE QUESTIONS [cite: 3-65] */
+                  /* ---------------- MULTIPLE CHOICE (Sections 1-5) ---------------- */
                   <div className="space-y-8 py-4">
                     <div className="space-y-3">
-                      <h3 className="text-lg font-bold text-[#0A2351]">Question {absoluteStep - 1}</h3>
-                      <p className="text-base text-slate-700 font-medium leading-relaxed">{questionBank[absoluteStep - 2]}</p>
+                      <h3 className="text-lg font-bold text-[#0A2351]">Question {absoluteStep}</h3>
+                      <p className="text-base text-slate-700 font-medium leading-relaxed">{questionBank[absoluteStep - 1]}</p>
                     </div>
                     <div className="grid gap-3">
                       {[
-                        currentSection === 2 ? 'Very Interested' : 'Strongly Agree', 
-                        currentSection === 2 ? 'Interested' : 'Agree', 
+                        currentSection === 1 ? 'Very Interested' : 'Strongly Agree', 
+                        currentSection === 1 ? 'Interested' : 'Agree', 
                         'Neutral', 
-                        currentSection === 2 ? 'Less Interested' : 'Disagree', 
-                        currentSection === 2 ? 'Not Interested' : 'Strongly Disagree'
+                        currentSection === 1 ? 'Less Interested' : 'Disagree', 
+                        currentSection === 1 ? 'Not Interested' : 'Strongly Disagree'
                       ].map((opt) => (
                         <button key={opt} onClick={handleNext} className="w-full rounded-xl border border-slate-200 p-4 text-left text-sm font-medium transition-all hover:border-[#F57D14] hover:bg-[#F57D14]/5 hover:text-[#F57D14]">
                           {opt}
@@ -247,20 +260,20 @@ const AssessmentFlowPsychometric = () => {
                     </div>
                     <div className="flex justify-start pt-6 border-t border-slate-100">
                       <Button variant="ghost" onClick={handlePrevious} className="text-slate-500 hover:text-[#0A2351]">
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Previous Question
+                        <ArrowLeft className="mr-2 h-4 w-4" /> {absoluteStep === 1 ? 'Back to Details' : 'Previous Question'}
                       </Button>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* 🟠 PROGRESS GRID: TURN ORANGE ON COMPLETION */}
-              {currentSection > 0 && (
+              {/* 🟠 PROGRESS GRID: Turns Orange */}
+              {isFormCompleted && (
                 <div className="mt-12 border-t border-slate-100 pt-8">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-4">Assessment Map</p>
                   <div className="flex flex-wrap gap-2">
                     {questionBank.map((_, i) => {
-                      const stepNum = i + 2
+                      const stepNum = i + 1
                       const isCompleted = completedSteps.includes(stepNum)
                       const isCurrent = absoluteStep === stepNum
                       return (
@@ -271,7 +284,7 @@ const AssessmentFlowPsychometric = () => {
                             ${isCurrent ? 'ring-2 ring-[#0A2351] ring-offset-2' : ''}
                           `}
                         >
-                          {i + 1}
+                          {stepNum}
                         </div>
                       )
                     })}
@@ -295,12 +308,19 @@ const AssessmentFlowPsychometric = () => {
                   </div>
                 </div>
                 <div className="mt-6 space-y-4">
-                  {sections.slice(1).map((s, i) => (
-                    <div key={s.name} className={`flex items-center gap-3 text-sm transition-opacity ${currentSection > i ? 'opacity-100' : 'opacity-40'}`}>
-                      <CheckCircle2 className={`h-4 w-4 shrink-0 ${currentSection > i ? 'text-[#F57D14]' : 'text-white'}`} />
-                      <span className={currentSection === i + 1 ? "font-bold text-[#F57D14]" : ""}>{s.name}</span>
-                    </div>
-                  ))}
+                  {sections.map((s, i) => {
+                    // Check logic for sidebar highlight
+                    const isPassed = isFormCompleted && currentSection > i;
+                    const isActive = isFormCompleted && currentSection === i;
+                    const isUpcoming = !isFormCompleted || currentSection < i;
+
+                    return (
+                      <div key={s.name} className={`flex items-center gap-3 text-sm transition-opacity ${isUpcoming ? 'opacity-40' : 'opacity-100'}`}>
+                        <CheckCircle2 className={`h-4 w-4 shrink-0 ${isPassed || isActive ? 'text-[#F57D14]' : 'text-white'}`} />
+                        <span className={isActive ? "font-bold text-[#F57D14]" : ""}>{s.name}</span>
+                      </div>
+                    )
+                  })}
                 </div>
               </CardContent>
             </Card>
