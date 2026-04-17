@@ -23,6 +23,7 @@ const AssessmentFlowPsychometric = () => {
   // Form State
   const [formData, setFormData] = useState({
     name: "",
+    email: "", // 🚀 Added Email Field
     whatsapp: "",
     college: ""
   })
@@ -103,7 +104,13 @@ const AssessmentFlowPsychometric = () => {
 
   const totalSteps = questionBank.length 
   const progress = (absoluteStep / totalSteps) * 100
-  const isFormValid = formData.name.trim() !== "" && formData.whatsapp.length >= 10 && formData.college.trim() !== ""
+  
+  // 🚀 Updated validation to include email check
+  const isFormValid = 
+    formData.name.trim() !== "" && 
+    formData.email.includes("@") && 
+    formData.whatsapp.length >= 10 && 
+    formData.college.trim() !== ""
 
   const updateSection = (step) => {
     let count = 0
@@ -154,6 +161,7 @@ const AssessmentFlowPsychometric = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: formData.name,
+            email: formData.email, // 🚀 Added Email to Payload
             whatsapp: formData.whatsapp,
             college: formData.college,
             answers: updatedAnswers 
@@ -232,6 +240,14 @@ const AssessmentFlowPsychometric = () => {
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
                         className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" 
                       />
+                      {/* 🚀 New Email Input Field */}
+                      <input 
+                        type="email" 
+                        placeholder="Email Address *" 
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" 
+                      />
                       <input 
                         type="tel" 
                         placeholder="WhatsApp Number *" 
@@ -283,10 +299,8 @@ const AssessmentFlowPsychometric = () => {
                         {isSubmitting ? (
                           <>Processing Data <Loader2 className="ml-2 h-4 w-4 animate-spin" /></>
                         ) : absoluteStep === totalSteps ? (
-                          // 🚀 Fixed the quotes issue here
                           <>Finish & View Results <ArrowRight className="ml-2 h-4 w-4" /></>
                         ) : (
-                          // 🚀 Fixed the quotes issue here
                           <>Next Reflection <ArrowRight className="ml-2 h-4 w-4" /></>
                         )}
                       </Button>
