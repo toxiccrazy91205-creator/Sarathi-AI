@@ -240,8 +240,8 @@ const ResultDashboardReal = ({ assessmentId }) => {
 
             <Card className="border-slate-200 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle className="text-2xl text-[#0A2351]">Your One-Year Roadmap</CardTitle>
-                <CardDescription>Quarterly focus areas for your career momentum.</CardDescription>
+                <CardTitle className="text-2xl text-[#0A2351]">Your 5-Year Career Transformation Roadmap</CardTitle>
+                <CardDescription>Quarterly milestones to kickstart your 5-year growth trajectory.</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-6 lg:grid-cols-2 xl:grid-cols-4">
                 {[
