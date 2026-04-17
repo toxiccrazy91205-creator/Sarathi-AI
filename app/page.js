@@ -12,16 +12,11 @@ import {
   Sparkles,
   CheckCircle2
 } from 'lucide-react';
-// 🚀 FIXED: Capital "H" to match your file name Header.js
-import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
-      {/* GLOBAL HEADER */}
-      <Header />
-
       <main>
         {/* 🚀 HERO SECTION */}
         <section className="relative overflow-hidden bg-white pt-20 pb-24 sm:pt-32 sm:pb-40">
