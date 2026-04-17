@@ -251,35 +251,57 @@ const ResultDashboardReal = ({ assessmentId }) => {
           </div>
         </div>
 
-        {/* 🔥 5-YEAR TRANSFORMATION SECTION */}
-        <section className="mt-12">
-          <h2 className="text-3xl font-bold text-[#0A2351] mb-8">Your 5-Year Career Transformation</h2>
-          <div className="grid gap-6 lg:grid-cols-3">
-            {[
-              { label: 'Year 1', title: 'Foundation & Skill Launch', data: roadmap.year_1, icon: Target, color: 'bg-blue-600' },
-              { label: 'Year 3', title: 'Market Acceleration', data: roadmap.year_3, icon: Sparkles, color: 'bg-[#F57D14]' },
-              { label: 'Year 5', title: 'Leadership & Mastery', data: roadmap.year_5, icon: Network, color: 'bg-[#0A2351]' }
-            ].map((step, i) => (
-              <Card key={i} className="relative overflow-hidden border-0 shadow-lg">
-                <div className={`h-2 w-full ${step.color}`} />
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-white ${step.color}`}>
-                      <step.icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter">{step.label}</p>
-                      <CardTitle className="text-lg text-[#0A2351]">{step.title}</CardTitle>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm leading-relaxed text-slate-600">{step.data || "Strategic analysis in progress..."}</p>
-                </CardContent>
-              </Card>
-            ))}
+       {/* 🔥 5-YEAR TRANSFORMATION SECTION - REFINED MAPPING */}
+<section className="mt-12">
+  <h2 className="text-3xl font-bold text-[#0A2351] mb-8">Your 5-Year Career Transformation</h2>
+  <div className="grid gap-6 lg:grid-cols-3">
+    {[
+      { 
+        label: 'Year 1', 
+        title: 'Foundation & Skill Launch', 
+        // 🚀 SMART MAPPING: Checks for year_1, Year 1, or Year_1
+        data: roadmap?.year_1 || roadmap?.['Year 1'] || roadmap?.Year_1, 
+        icon: Target, 
+        color: 'bg-blue-600' 
+      },
+      { 
+        label: 'Year 3', 
+        title: 'Market Acceleration', 
+        data: roadmap?.year_3 || roadmap?.['Year 3'] || roadmap?.Year_3, 
+        icon: Sparkles, 
+        color: 'bg-[#F57D14]' 
+      },
+      { 
+        label: 'Year 5', 
+        title: 'Leadership & Mastery', 
+        data: roadmap?.year_5 || roadmap?.['Year 5'] || roadmap?.Year_5, 
+        icon: Network, 
+        color: 'bg-[#0A2351]' 
+      }
+    ].map((step, i) => (
+      <Card key={i} className="relative overflow-hidden border-0 shadow-lg bg-white">
+        <div className={`h-2 w-full ${step.color}`} />
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-white ${step.color}`}>
+              <step.icon className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">{step.label}</p>
+              <CardTitle className="text-lg text-[#0A2351]">{step.title}</CardTitle>
+            </div>
           </div>
-        </section>
+        </CardHeader>
+        <CardContent>
+          {/* 🚀 If data exists, show it. If not, show a clean message */}
+          <p className="text-sm leading-relaxed text-slate-600">
+            {step.data ? step.data : "Your personalized milestone is being calculated for this period."}
+          </p>
+        </CardContent>
+      </Card>
+    ))}
+  </div>
+</section>
 
       </div>
     </main>
