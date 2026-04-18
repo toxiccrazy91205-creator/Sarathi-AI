@@ -64,8 +64,8 @@ async function generateValidatedRoadmap(promptData) {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
   
   // Using Flash for real-time mobile performance
-  const model = genAI.getGenerativeModel({ 
-    model: 'gemini-2.0-flash', // 🚦 Using the 2.0 lane which usually has less traffic!
+ const model = genAI.getGenerativeModel({ 
+    model: 'gemini-2.5-flash', // 🚀 The latest model, now fully unlocked for you
     systemInstruction: SYSTEM_PROMPT,
     generationConfig: {
       responseMimeType: "application/json", // Forces perfect JSON output
