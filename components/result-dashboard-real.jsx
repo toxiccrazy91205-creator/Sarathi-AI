@@ -181,9 +181,7 @@ const ResultDashboardReal = ({ assessmentId }) => {
                 This transformation strategy was custom-built using your unique psychometric signature, mapping your future within the Indian job market.
               </p>
             </div>
-            <Button onClick={handleDownload} className="h-14 rounded-2xl bg-[#F57D14] px-8 text-lg font-bold hover:bg-[#dd6f11] print:hidden shadow-lg shadow-[#F57D14]/20">
-              <Download className="mr-2 h-5 w-5" /> Download PDF
-            </Button>
+           
           </div>
           {/* Subtle Background Pattern */}
           <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
