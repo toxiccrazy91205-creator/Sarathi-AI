@@ -19,7 +19,7 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       <main>
         {/* 🚀 HERO SECTION */}
-        <section className="relative overflow-hidden bg-white pt-8 pb-24 sm:pt-16 sm:pb-40">
+        <section className="relative overflow-hidden bg-white pt-8 pb-12 sm:pt-16 sm:pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
               <div className="max-w-2xl">
@@ -68,7 +68,7 @@ export default function Home() {
         </section>
 
         {/* 🧬 METHODOLOGY SECTION */}
-        <section id="methodology" className="bg-slate-50 py-24 sm:py-32 border-t border-slate-100">
+        <section id="methodology" className="bg-slate-50 py-12 sm:py-16 border-t border-slate-100">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-16 text-center">
               <h2 className="text-3xl font-bold tracking-tight text-[#0A2351] sm:text-4xl">The Science Behind the Roadmap</h2>
@@ -110,7 +110,7 @@ export default function Home() {
         </section>
 
         {/* 🏢 FOR INSTITUTIONS SECTION */}
-        <section id="institutions" className="bg-white py-24 sm:py-32">
+        <section id="institutions" className="bg-white py-12 sm:py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid items-center gap-12 lg:grid-cols-2">
               <div>
@@ -143,7 +143,7 @@ export default function Home() {
         </section>
 
         {/* 🤝 CONTACT SECTION */}
-        <section id="contact" className="bg-[#0A2351] py-24 text-white sm:py-32">
+        <section id="contact" className="bg-[#0A2351] py-12 text-white sm:py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-24">
               
