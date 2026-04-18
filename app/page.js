@@ -40,45 +40,46 @@ export default function Home() {
                 </div>
               </div>
 
-             {/* HERO VISUAL */}
-<div className="relative mx-auto w-full max-w-lg lg:max-w-none">
-  <div className="rounded-3xl bg-[#0A2351] p-6 sm:p-8 shadow-2xl ring-1 ring-white/10">
-    
-    {/* Top Section: Insights */}
-    <div className="mb-6 rounded-2xl bg-white/10 p-5 backdrop-blur-sm border border-white/10">
-      <div className="flex items-center justify-between">
-        <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em]">Predictive Insights</p>
-        <ShieldCheck className="h-5 w-5 text-[#F57D14]" />
-      </div>
-      <p className="mt-2 text-lg font-bold text-white">Clarity score improves with each step</p>
-    </div>
+              {/* HERO VISUAL */}
+              <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
+                <div className="rounded-3xl bg-[#0A2351] p-6 sm:p-8 shadow-2xl ring-1 ring-white/10">
+                  
+                  {/* Top Section: Insights */}
+                  <div className="mb-6 rounded-2xl bg-white/10 p-5 backdrop-blur-sm border border-white/10">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em]">Predictive Insights</p>
+                      <ShieldCheck className="h-5 w-5 text-[#F57D14]" />
+                    </div>
+                    <p className="mt-2 text-lg font-bold text-white">Clarity score improves with each step</p>
+                  </div>
 
-    {/* Bottom Section: Result Card */}
-    <div className="rounded-2xl bg-white p-6 shadow-inner">
-      <p className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-400">Industry Alignment Match</p>
-      
-      {/* List Container - space-y-3 makes the gap between rows tighter and cleaner */}
-      <div className="space-y-3">
-        {/* Row 1 */}
-        <div className="flex items-center justify-between border-b border-slate-50 pb-3">
-          <p className="text-sm font-bold text-[#0A2351]">Technical Product Manager</p>
-          <span className="rounded-full bg-[#F57D14]/10 px-3 py-1 text-[10px] font-extrabold uppercase text-[#F57D14] whitespace-nowrap">
-            93% Compatibility
-          </span>
-        </div>
+                  {/* Bottom Section: Result Card */}
+                  <div className="rounded-2xl bg-white p-6 shadow-inner">
+                    <p className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-400">Industry Alignment Match</p>
+                    
+                    <div className="space-y-3">
+                      {/* Row 1 */}
+                      <div className="flex items-center justify-between border-b border-slate-50 pb-3">
+                        <p className="text-sm font-bold text-[#0A2351]">Technical Product Manager</p>
+                        <span className="rounded-full bg-[#F57D14]/10 px-3 py-1 text-[10px] font-extrabold uppercase text-[#F57D14] whitespace-nowrap">
+                          93% Compatibility
+                        </span>
+                      </div>
 
-        {/* Row 2 */}
-        <div className="flex items-center justify-between pt-1">
-          <p className="text-sm font-bold text-[#0A2351]">UX Research Lead</p>
-          <span className="rounded-full bg-[#F57D14]/10 px-3 py-1 text-[10px] font-extrabold uppercase text-[#F57D14] whitespace-nowrap">
-            88% Compatibility
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-         
+                      {/* Row 2 */}
+                      <div className="flex items-center justify-between pt-1">
+                        <p className="text-sm font-bold text-[#0A2351]">UX Research Lead</p>
+                        <span className="rounded-full bg-[#F57D14]/10 px-3 py-1 text-[10px] font-extrabold uppercase text-[#F57D14] whitespace-nowrap">
+                          88% Compatibility
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* 🧬 METHODOLOGY SECTION */}
         <section id="methodology" className="bg-slate-50 py-12 sm:py-16 border-t border-slate-100">
