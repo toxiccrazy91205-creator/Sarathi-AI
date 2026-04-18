@@ -1,33 +1,72 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, Star, Loader2 } from 'lucide-react'
+import { 
+  ArrowLeft, 
+  ArrowRight, 
+  CheckCircle2, 
+  ClipboardCheck, 
+  Star, 
+  Loader2, 
+  Sparkles, 
+  BrainCircuit, 
+  LineChart 
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 
+// --- High-End Processing Sub-Component ---
+const ProcessingView = () => {
+  const [step, setStep] = useState(0);
+  const messages = [
+    "Synthesizing your 60-point profile...",
+    "Gemini AI mapping intrinsic traits...",
+    "Evaluating industry compatibility...",
+    "Generating 5-year transformation roadmap..."
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStep((prev) => (prev < messages.length - 1 ? prev + 1 : prev));
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [messages.length]);
+
+  return (
+    <div className="flex flex-col items-center justify-center py-12 text-center animate-in fade-in zoom-in duration-500">
+      <div className="relative mb-8">
+        <div className="absolute inset-0 rounded-full bg-[#F57D14]/20 animate-ping" />
+        <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-white border-4 border-[#0A2351] shadow-xl">
+          <Loader2 className="w-10 h-10 text-[#F57D14] animate-spin" />
+        </div>
+      </div>
+      <h3 className="text-2xl font-bold text-[#0A2351] mb-2">Creating Your Future</h3>
+      <p className="text-slate-500 mb-8 text-sm">Please do not refresh. Our AI engine is building your roadmap.</p>
+      
+      <div className="w-full max-w-xs space-y-4">
+        {messages.map((msg, i) => (
+          <div key={i} className={`flex items-center gap-3 transition-all duration-500 ${i === step ? 'opacity-100 translate-x-2' : i < step ? 'opacity-40' : 'opacity-10'}`}>
+            {i < step ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Sparkles className={`w-4 h-4 ${i === step ? 'text-[#F57D14]' : 'text-slate-300'}`} />}
+            <span className={`text-xs font-bold uppercase tracking-wider ${i === step ? 'text-[#0A2351]' : 'text-slate-400'}`}>{msg}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const AssessmentFlowPsychometric = () => {
   const router = useRouter()
   
-  // State Management
   const [isFormCompleted, setIsFormCompleted] = useState(false)
   const [currentSection, setCurrentSection] = useState(0) 
   const [absoluteStep, setAbsoluteStep] = useState(1) 
   const [textResponse, setTextResponse] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
-  // Array to store all 60 answers
   const [allAnswers, setAllAnswers] = useState(Array(60).fill(null))
-  
-  // Form State
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "", // 🚀 Added Email Field
-    whatsapp: "",
-    college: ""
-  })
-
+  const [formData, setFormData] = useState({ name: "", email: "", whatsapp: "", college: "" })
   const [completedSteps, setCompletedSteps] = useState([])
 
   const sections = [
@@ -105,7 +144,6 @@ const AssessmentFlowPsychometric = () => {
   const totalSteps = questionBank.length 
   const progress = (absoluteStep / totalSteps) * 100
   
-  // 🚀 Updated validation to include email check
   const isFormValid = 
     formData.name.trim() !== "" && 
     formData.email.includes("@") && 
@@ -130,8 +168,6 @@ const AssessmentFlowPsychometric = () => {
 
   const handleNext = async (selectedOption) => {
     const updatedAnswers = [...allAnswers]
-    
-    // Save current answer
     if (currentSection === 5) {
       updatedAnswers[absoluteStep - 1] = textResponse.trim()
     } else {
@@ -145,17 +181,15 @@ const AssessmentFlowPsychometric = () => {
     
     if (absoluteStep < totalSteps) {
       setTimeout(() => {
-      const nextStep = absoluteStep + 1
-      
-      // ✅ GHOST BUSTER: Pre-sync state for the next question
-      const nextSavedAnswer = updatedAnswers[nextStep - 1]
-      setTextResponse(nextSavedAnswer || "")
-
-      setAbsoluteStep(nextStep)
-      updateSection(nextStep)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }, 300);
+        const nextStep = absoluteStep + 1
+        const nextSavedAnswer = updatedAnswers[nextStep - 1]
+        setTextResponse(nextSavedAnswer || "")
+        setAbsoluteStep(nextStep)
+        updateSection(nextStep)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }, 300);
     } else {
+      // 🚀 Trigger the Premium Processing Screen
       setIsSubmitting(true)
       try {
         const response = await fetch('/api/submit-assessment', {
@@ -163,7 +197,7 @@ const AssessmentFlowPsychometric = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: formData.name,
-            email: formData.email, // 🚀 Added Email to Payload
+            email: formData.email,
             whatsapp: formData.whatsapp,
             college: formData.college,
             answers: updatedAnswers 
@@ -171,15 +205,12 @@ const AssessmentFlowPsychometric = () => {
         });
         
         const data = await response.json();
-        
         if (data.assessmentId) {
           router.push(`/result?id=${data.assessmentId}`);
         } else {
-           console.error("No assessment ID returned", data)
-           setIsSubmitting(false)
+          setIsSubmitting(false)
         }
       } catch (error) {
-        console.error("Submission failed", error);
         setIsSubmitting(false)
       }
     }
@@ -188,11 +219,8 @@ const AssessmentFlowPsychometric = () => {
   const handlePrevious = () => {
     if (absoluteStep > 1) {
       const prevStep = absoluteStep - 1
-      
-      // ✅ GHOST BUSTER: Pre-sync state for the previous question
       const prevSavedAnswer = allAnswers[prevStep - 1]
       setTextResponse(prevSavedAnswer || "")
-
       setAbsoluteStep(prevStep)
       updateSection(prevStep)
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -207,7 +235,6 @@ const AssessmentFlowPsychometric = () => {
         <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
           <Card className="overflow-hidden border-slate-200 bg-white shadow-xl">
             
-            {/* PROGRESS HEADER */}
             <div className="bg-[#0A2351] px-6 py-4 text-white">
               {!isFormCompleted ? (
                 <div className="flex items-center justify-between">
@@ -230,86 +257,44 @@ const AssessmentFlowPsychometric = () => {
             <CardContent className="p-6 sm:p-10">
               <div className="mx-auto max-w-xl">
                 
-                {!isFormCompleted ? (
-                  /* ---------------- STUDENT FORM ---------------- */
+                {/* 🔄 View Switcher: Shows Processing View if Submitting, otherwise shows Form/Questions */}
+                {isSubmitting ? (
+                  <ProcessingView />
+                ) : !isFormCompleted ? (
+                  /* --- STUDENT FORM --- */
                   <div className="space-y-6">
                     <h3 className="text-xl font-bold text-[#0A2351]">Tell us who you are</h3>
                     <div className="space-y-4">
-                      <input 
-                        type="text" 
-                        placeholder="Full Name *" 
-                        value={formData.name}
-                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" 
-                      />
-                      {/* 🚀 New Email Input Field */}
-                      <input 
-                        type="email" 
-                        placeholder="Email Address *" 
-                        value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" 
-                      />
-                      <input 
-                        type="tel" 
-                        placeholder="WhatsApp Number *" 
-                        value={formData.whatsapp}
-                        onChange={(e) => setFormData({...formData, whatsapp: e.target.value})}
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" 
-                      />
-                      <input 
-                        type="text" 
-                        placeholder="College Name *" 
-                        value={formData.college}
-                        onChange={(e) => setFormData({...formData, college: e.target.value})}
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" 
-                      />
+                      <input type="text" placeholder="Full Name *" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" />
+                      <input type="email" placeholder="Email Address *" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" />
+                      <input type="tel" placeholder="WhatsApp Number *" value={formData.whatsapp} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" />
+                      <input type="text" placeholder="College Name *" value={formData.college} onChange={(e) => setFormData({...formData, college: e.target.value})} className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" />
                     </div>
                     <div className="flex justify-end pt-4">
-                      <Button 
-                        onClick={handleStartTest} 
-                        disabled={!isFormValid}
-                        className={`h-12 rounded-xl px-8 font-bold text-white transition-all ${isFormValid ? 'bg-[#F57D14] hover:bg-[#dd6f11]' : 'bg-slate-300 cursor-not-allowed'}`}
-                      >
+                      <Button onClick={handleStartTest} disabled={!isFormValid} className={`h-12 rounded-xl px-8 font-bold text-white transition-all ${isFormValid ? 'bg-[#F57D14] hover:bg-[#dd6f11]' : 'bg-slate-300 cursor-not-allowed'}`}>
                         Start Assessment <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>
                   </div>
                 ) : currentSection === 5 ? (
-                  /* ---------------- OPEN REFLECTIONS (Section 6) ---------------- */
+                  /* --- OPEN REFLECTIONS --- */
                   <div className="space-y-8 py-4">
                     <div className="space-y-3">
                       <h3 className="text-lg font-bold text-[#0A2351]">Self-Reflection</h3>
                       <p className="text-base text-slate-700 font-medium leading-relaxed">{questionBank[absoluteStep - 1]}</p>
                     </div>
-                    <textarea 
-                      value={textResponse}
-                      onChange={(e) => setTextResponse(e.target.value)}
-                      placeholder="Type your reflection here. AI uses this to measure career clarity..." 
-                      className="w-full h-40 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm focus:border-[#F57D14] focus:outline-none focus:ring-1 focus:ring-[#F57D14]"
-                    />
+                    <textarea value={textResponse} onChange={(e) => setTextResponse(e.target.value)} placeholder="Type your reflection here. AI uses this to measure career clarity..." className="w-full h-40 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm focus:border-[#F57D14] focus:outline-none focus:ring-1 focus:ring-[#F57D14]" />
                     <div className="flex items-center justify-between pt-6">
-                      <Button variant="ghost" onClick={handlePrevious} disabled={isSubmitting} className="text-slate-500 hover:text-[#0A2351]">
+                      <Button variant="ghost" onClick={handlePrevious} className="text-slate-500 hover:text-[#0A2351]">
                         <ArrowLeft className="mr-2 h-4 w-4" /> Previous
                       </Button>
-                      
-                      <Button 
-                        onClick={() => handleNext(null)} 
-                        disabled={!textResponse.trim() || isSubmitting} 
-                       className="h-12 rounded-xl bg-[#F57D14] px-4 sm:px-8 font-bold text-white shadow-lg hover:bg-[#dd6f11]"
-                      >
-                        {isSubmitting ? (
-                          <>Processing Data <Loader2 className="ml-2 h-4 w-4 animate-spin" /></>
-                        ) : absoluteStep === totalSteps ? (
-                          <>Finish & View Results <ArrowRight className="ml-2 h-4 w-4" /></>
-                        ) : (
-                          <>Next Reflection <ArrowRight className="ml-2 h-4 w-4" /></>
-                        )}
+                      <Button onClick={() => handleNext(null)} disabled={!textResponse.trim()} className="h-12 rounded-xl bg-[#F57D14] px-4 sm:px-8 font-bold text-white shadow-lg hover:bg-[#dd6f11]">
+                        {absoluteStep === totalSteps ? "Finish & View Results" : "Next Reflection"} <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  /* ---------------- MULTIPLE CHOICE (Sections 1-5) ---------------- */
+                  /* --- MULTIPLE CHOICE --- */
                   <div className="space-y-8 py-4">
                     <div className="space-y-3">
                       <h3 className="text-lg font-bold text-[#0A2351]">Question {absoluteStep}</h3>
@@ -325,21 +310,14 @@ const AssessmentFlowPsychometric = () => {
                       ].map((opt) => {
                         const isSelected = allAnswers[absoluteStep - 1] === opt;
                         return (
-                          <button 
-  key={`${absoluteStep}-${opt}`} 
-  onClick={() => handleNext(opt)} 
-                            disabled={isSubmitting}
-                            className={`w-full rounded-xl border p-4 text-left text-sm font-medium transition-all 
-                              ${isSelected ? 'border-[#F57D14] bg-[#F57D14]/5 text-[#F57D14]' : 'border-slate-200 hover:border-[#F57D14] hover:bg-[#F57D14]/5 hover:text-[#F57D14]'}
-                            `}
-                          >
+                          <button key={`${absoluteStep}-${opt}`} onClick={() => handleNext(opt)} className={`w-full rounded-xl border p-4 text-left text-sm font-medium transition-all ${isSelected ? 'border-[#F57D14] bg-[#F57D14]/5 text-[#F57D14]' : 'border-slate-200 hover:border-[#F57D14] hover:bg-[#F57D14]/5 hover:text-[#F57D14]'}`}>
                             {opt}
                           </button>
                         )
                       })}
                     </div>
                     <div className="flex justify-start pt-6 border-t border-slate-100">
-                      <Button variant="ghost" onClick={handlePrevious} disabled={isSubmitting} className="text-slate-500 hover:text-[#0A2351]">
+                      <Button variant="ghost" onClick={handlePrevious} className="text-slate-500 hover:text-[#0A2351]">
                         <ArrowLeft className="mr-2 h-4 w-4" /> {absoluteStep === 1 ? 'Back to Details' : 'Previous Question'}
                       </Button>
                     </div>
@@ -347,23 +325,16 @@ const AssessmentFlowPsychometric = () => {
                 )}
               </div>
 
-              {/* 🟠 PROGRESS MAP */}
-              {isFormCompleted && (
+              {isFormCompleted && !isSubmitting && (
                 <div className="mt-12 border-t border-slate-100 pt-8">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-4">Assessment Map</p>
                   <div className="flex flex-wrap gap-2">
                     {questionBank.map((_, i) => {
-                      const stepNum = i + 1
-                      const isCompleted = completedSteps.includes(stepNum)
-                      const isCurrent = absoluteStep === stepNum
+                      const stepNum = i + 1;
+                      const isCompleted = completedSteps.includes(stepNum);
+                      const isCurrent = absoluteStep === stepNum;
                       return (
-                        <div 
-                          key={i}
-                          className={`flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-bold transition-all
-                            ${isCompleted ? 'bg-[#F57D14] text-white' : 'bg-slate-100 text-slate-400'}
-                            ${isCurrent ? 'ring-2 ring-[#0A2351] ring-offset-2' : ''}
-                          `}
-                        >
+                        <div key={i} className={`flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-bold transition-all ${isCompleted ? 'bg-[#F57D14] text-white' : 'bg-slate-100 text-slate-400'} ${isCurrent ? 'ring-2 ring-[#0A2351] ring-offset-2' : ''}`}>
                           {stepNum}
                         </div>
                       )
@@ -374,7 +345,6 @@ const AssessmentFlowPsychometric = () => {
             </CardContent>
           </Card>
 
-          {/* SIDEBAR */}
           <aside className="space-y-6 hidden lg:block">
             <Card className="border-0 bg-[#0A2351] text-white shadow-lg">
               <CardContent className="p-6">
@@ -392,7 +362,6 @@ const AssessmentFlowPsychometric = () => {
                     const isPassed = isFormCompleted && currentSection > i;
                     const isActive = isFormCompleted && currentSection === i;
                     const isUpcoming = !isFormCompleted || currentSection < i;
-
                     return (
                       <div key={s.name} className={`flex items-center gap-3 text-sm transition-opacity ${isUpcoming ? 'opacity-40' : 'opacity-100'}`}>
                         <CheckCircle2 className={`h-4 w-4 shrink-0 ${isPassed || isActive ? 'text-[#F57D14]' : 'text-white'}`} />
@@ -403,19 +372,6 @@ const AssessmentFlowPsychometric = () => {
                 </div>
               </CardContent>
             </Card>
-            
-            <div className="rounded-2xl border border-[#0A2351]/10 bg-white p-6 shadow-sm">
-              <div className="flex items-center gap-1 text-[#F57D14]">
-                {[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
-              </div>
-              <p className="mt-4 text-sm italic leading-relaxed text-slate-600">
-                "The SARATHI assessment gave me a clear direction when I was confused between my core engineering and my interest in design."
-              </p>
-              <div className="mt-4 border-t border-slate-100 pt-4">
-                <p className="text-sm font-bold text-[#0A2351]">Rahul V.</p>
-                <p className="text-xs text-slate-400">Final Year, B.Tech</p>
-              </div>
-            </div>
           </aside>
         </div>
       </div>
