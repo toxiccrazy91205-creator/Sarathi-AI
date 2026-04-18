@@ -82,7 +82,7 @@ export default function Home() {
         </section>
 
         {/* 🧬 METHODOLOGY SECTION */}
-        <section id="methodology" className="bg-slate-50 py-12 sm:py-16 border-t border-slate-100">
+        <section id="methodology" className="scroll-mt-24 bg-slate-50 py-12 sm:py-16 border-t border-slate-100">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-12 text-center">
               <h2 className="text-3xl font-bold tracking-tight text-[#0A2351] sm:text-4xl">The Science Behind the Roadmap</h2>
@@ -161,7 +161,7 @@ export default function Home() {
         </section>
 
         {/* 🤝 CONTACT SECTION */}
-        <section id="contact" className="bg-[#0A2351] py-12 text-white sm:py-16">
+       <section id="contact" className="scroll-mt-24 bg-[#0A2351] py-12 text-white sm:py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-24 items-center">
               <div className="space-y-10">
