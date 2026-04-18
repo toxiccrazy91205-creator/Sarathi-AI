@@ -296,7 +296,7 @@ const AssessmentFlowPsychometric = () => {
                       <Button 
                         onClick={() => handleNext(null)} 
                         disabled={!textResponse.trim() || isSubmitting} 
-                        className="h-12 rounded-xl bg-[#F57D14] px-8 font-bold text-white shadow-lg hover:bg-[#dd6f11]"
+                       className="h-12 rounded-xl bg-[#F57D14] px-4 sm:px-8 font-bold text-white shadow-lg hover:bg-[#dd6f11]"
                       >
                         {isSubmitting ? (
                           <>Processing Data <Loader2 className="ml-2 h-4 w-4 animate-spin" /></>
