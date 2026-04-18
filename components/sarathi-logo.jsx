@@ -1,12 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-
 import { cn } from '@/lib/utils'
 
 const LOGO_URL = 'https://customer-assets.emergentagent.com/job_guidance-hub-78/artifacts/xatwivnm_sarathi%20logo.png'
 
-const SarathiLogo = ({ href = '/', className, imageClassName = 'h-14 w-auto' }) => {
+const SarathiLogo = ({ href = '/', className, imageClassName = 'h-12 sm:h-20 w-auto max-w-full' }) => {
   const logoImage = (
     <img
       src={LOGO_URL}
