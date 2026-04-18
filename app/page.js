@@ -19,7 +19,7 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       <main>
         {/* 🚀 HERO SECTION */}
-        <section className="relative overflow-hidden bg-white pt-20 pb-24 sm:pt-32 sm:pb-40">
+        <section className="relative overflow-hidden bg-white pt-8 pb-24 sm:pt-16 sm:pb-40">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
               <div className="max-w-2xl">
