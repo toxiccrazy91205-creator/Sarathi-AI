@@ -227,9 +227,9 @@ const AssessmentFlowPsychometric = () => {
     }
   }
 
-  return (
-    {/* 🚀 Section Padding: py-12 mobile, py-20 desktop */}
+ return (
     <main className="min-h-screen bg-slate-50 py-12 lg:py-20">
+      {/* 🚀 Section Padding: py-12 mobile, py-20 desktop */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
           <Card className="overflow-hidden rounded-3xl border-slate-200 bg-white shadow-xl">
