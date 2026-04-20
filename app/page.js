@@ -18,8 +18,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <main>
-        {/* 🚀 HERO SECTION */}
-        <section className="relative overflow-hidden bg-white pt-8 pb-12 sm:pt-16 sm:pb-16">
+        {/* 🚀 HERO SECTION - Fixed Padding (80px mobile, 96px desktop) */}
+        <section className="relative overflow-hidden bg-white py-20 lg:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
               <div className="max-w-2xl">
@@ -30,45 +30,38 @@ export default function Home() {
                 <h1 className="text-5xl font-extrabold tracking-tight text-[#0A2351] sm:text-6xl xl:text-7xl">
                   Find Your <br className="hidden lg:block"/> True North
                 </h1>
-                <p className="mt-6 text-lg leading-8 text-slate-600 sm:max-w-md lg:max-w-none">
+                {/* 🚀 Strict 16px gap below heading */}
+                <p className="mt-4 text-lg leading-8 text-slate-600 sm:max-w-md lg:max-w-none">
                   Stop guessing. Use the science of psychometrics and the power of Gemini AI to map your intrinsic traits to a personalized 5-year roadmap for career success.
                 </p>
+                {/* 🚀 Strict 40px gap to CTA */}
                 <div className="mt-10 flex items-center gap-x-6">
-                  {/* Kept pill-shape (rounded-full) for the main CTA, as it draws the eye and looks intentional */}
                   <Button asChild className="h-14 rounded-full bg-[#0A2351] px-8 text-base font-bold text-white hover:bg-[#0A2351]/90 shadow-xl shadow-[#0A2351]/20 transition-all hover:scale-105">
                     <Link href="/assessment">Take the Test <ArrowRight className="ml-2 h-5 w-5" /></Link>
                   </Button>
                 </div>
               </div>
 
-              {/* HERO VISUAL */}
               <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
-                {/* 🚀 Changed to rounded-[32px] for large panel hierarchy */}
+                {/* 🚀 Card inner padding: 24px mobile, 32px desktop */}
                 <div className="rounded-[32px] bg-[#0A2351] p-6 sm:p-8 shadow-2xl ring-1 ring-white/10">
-                  
-                  {/* Top Section: Insights */}
                   <div className="mb-6 rounded-2xl bg-white/10 p-5 backdrop-blur-sm border border-white/10">
                     <div className="flex items-center justify-between">
                       <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em]">Predictive Insights</p>
                       <ShieldCheck className="h-5 w-5 text-[#F57D14]" />
                     </div>
-                    <p className="mt-2 text-lg font-bold text-white">Clarity score improves with each step</p>
+                    <p className="mt-3 text-lg font-bold text-white">Clarity score improves with each step</p>
                   </div>
 
-                  {/* Bottom Section: Result Card */}
                   <div className="rounded-2xl bg-white p-6 shadow-inner">
                     <p className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-400">Industry Alignment Match</p>
-                    
                     <div className="space-y-3">
-                      {/* Row 1 */}
                       <div className="flex items-center justify-between border-b border-slate-50 pb-3">
                         <p className="text-sm font-bold text-[#0A2351]">Technical Product Manager</p>
                         <span className="rounded-full bg-[#F57D14]/10 px-3 py-1 text-[10px] font-extrabold uppercase text-[#F57D14] whitespace-nowrap">
                           93% Compatibility
                         </span>
                       </div>
-
-                      {/* Row 2 */}
                       <div className="flex items-center justify-between pt-1">
                         <p className="text-sm font-bold text-[#0A2351]">UX Research Lead</p>
                         <span className="rounded-full bg-[#F57D14]/10 px-3 py-1 text-[10px] font-extrabold uppercase text-[#F57D14] whitespace-nowrap">
@@ -84,27 +77,34 @@ export default function Home() {
         </section>
 
         {/* 🧬 METHODOLOGY SECTION */}
-        <section id="methodology" className="scroll-mt-24 bg-slate-50 py-12 sm:py-16 border-t border-slate-100">
+        <section id="methodology" className="scroll-mt-24 bg-slate-50 py-20 lg:py-24 border-t border-slate-100">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-12 text-center">
+            {/* 🚀 Subheading to cards: 40px (mb-10) */}
+            <div className="mb-10 text-center">
               <h2 className="text-3xl font-bold tracking-tight text-[#0A2351] sm:text-4xl">The Science Behind the Roadmap</h2>
+              {/* 🚀 Heading to subheading: 16px (mt-4) */}
               <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-slate-600">
                 SARATHI eliminates the "hit-or-miss" approach of traditional counseling. We leverage proprietary psychometric data processed via the Gemini 2.5 Flash engine to provide a blueprint that evolves with the Indian job market.
               </p>
             </div>
             
-            <div className="grid gap-8 md:grid-cols-3">
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center transition-all hover:shadow-xl hover:-translate-y-2 group">
-                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#0A2351]/5 text-[#0A2351] group-hover:bg-[#0A2351] group-hover:text-white transition-colors duration-300">
+            {/* 🚀 Gap between cards: 24px (gap-6) */}
+            <div className="grid gap-6 md:grid-cols-3">
+              {/* 🚀 Card inner padding: 24px mobile, 32px desktop */}
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 text-center transition-all hover:shadow-xl hover:-translate-y-2 group">
+                {/* 🚀 Icon to Title: 20px (mb-5) */}
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#0A2351]/5 text-[#0A2351] group-hover:bg-[#0A2351] group-hover:text-white transition-colors duration-300">
                   <Target className="h-8 w-8" />
                 </div>
                 <h3 className="text-xl font-bold text-[#0A2351]">Multi-Pillar Evaluation</h3>
+                {/* 🚀 Title to Description: 12px (mt-3) */}
                 <p className="mt-3 text-sm leading-6 text-slate-600">
                   A comprehensive deep-dive into Personality, Interests, Aptitude, Motivation, and Behavioral tendencies to build a 360° student profile.
                 </p>
               </div>
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center transition-all hover:shadow-xl hover:-translate-y-2 group">
-                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F57D14]/10 text-[#F57D14] group-hover:bg-[#F57D14] group-hover:text-white transition-colors duration-300">
+
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 text-center transition-all hover:shadow-xl hover:-translate-y-2 group">
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F57D14]/10 text-[#F57D14] group-hover:bg-[#F57D14] group-hover:text-white transition-colors duration-300">
                   <BrainCircuit className="h-8 w-8" />
                 </div>
                 <h3 className="text-xl font-bold text-[#0A2351]">AI Pattern Recognition</h3>
@@ -112,8 +112,9 @@ export default function Home() {
                   Our Gemini-powered engine identifies non-obvious career strengths, removing human bias and matching students to the fastest-growing sectors.
                 </p>
               </div>
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center transition-all hover:shadow-xl hover:-translate-y-2 group">
-                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#0A2351]/5 text-[#0A2351] group-hover:bg-[#0A2351] group-hover:text-white transition-colors duration-300">
+
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 text-center transition-all hover:shadow-xl hover:-translate-y-2 group">
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#0A2351]/5 text-[#0A2351] group-hover:bg-[#0A2351] group-hover:text-white transition-colors duration-300">
                   <LineChart className="h-8 w-8" />
                 </div>
                 <h3 className="text-xl font-bold text-[#0A2351]">Actionable Roadmaps</h3>
@@ -126,8 +127,7 @@ export default function Home() {
         </section>
 
         {/* 🏢 FOR INSTITUTIONS SECTION */}
-        {/* 🚀 Added the missing scroll-mt-24 fix here */}
-        <section id="institutions" className="scroll-mt-24 bg-white py-12 sm:py-16">
+        <section id="institutions" className="scroll-mt-24 bg-white py-20 lg:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid items-center gap-12 lg:grid-cols-2">
               <div className="order-2 lg:order-1">
@@ -135,9 +135,11 @@ export default function Home() {
                   Institutional Partnership
                 </div>
                 <h2 className="text-3xl font-bold tracking-tight text-[#0A2351] sm:text-4xl">Empowering College Placement Cells</h2>
-                <p className="mt-6 text-base leading-relaxed text-slate-600">
+                {/* 🚀 Heading to subheading: 16px (mt-4) */}
+                <p className="mt-4 text-base leading-relaxed text-slate-600">
                   SARATHI partners with forward-thinking universities to modernize their placement infrastructure. Our bulk-assessment platform gives TPOs real-time data to bridge the gap between student potential and industry requirements.
                 </p>
+                {/* 🚀 Subheading to Content: 32px (mt-8) */}
                 <ul className="mt-8 space-y-4">
                   {[
                     'Batch-level aptitude and skill gap analytics', 
@@ -151,7 +153,6 @@ export default function Home() {
                 </ul>
               </div>
               
-              {/* 🚀 Changed to rounded-[32px] for large panel hierarchy */}
               <div className="order-1 lg:order-2 relative aspect-square overflow-hidden rounded-[32px] bg-[#0A2351] shadow-2xl lg:aspect-auto lg:h-[500px]">
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center border border-white/10 m-4 rounded-2xl bg-white/5 backdrop-blur-sm">
                   <Users className="mb-6 h-16 w-16 text-[#F57D14]" />
@@ -165,7 +166,7 @@ export default function Home() {
         </section>
 
         {/* 🤝 CONTACT SECTION */}
-       <section id="contact" className="scroll-mt-24 bg-[#0A2351] py-12 text-white sm:py-16">
+       <section id="contact" className="scroll-mt-24 bg-[#0A2351] py-20 lg:py-24 text-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-24 items-center">
               <div className="space-y-10">
@@ -173,7 +174,7 @@ export default function Home() {
                   <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
                     Bring SARATHI to <br className="hidden sm:block" /> Your Campus
                   </h2>
-                  <p className="mt-6 max-w-lg text-base leading-relaxed text-white/80">
+                  <p className="mt-4 max-w-lg text-base leading-relaxed text-white/80">
                     Join the ranks of institutions transforming student outcomes. Schedule a 15-minute demo to see how our predictive data can boost your placement records.
                   </p>
                 </div>
@@ -202,15 +203,17 @@ export default function Home() {
               </div>
 
               {/* B2B Demo Form */}
-              <div className="rounded-3xl bg-white p-8 shadow-2xl sm:p-10 text-slate-900 border border-slate-100">
+              {/* 🚀 Card inner padding: 24px mobile, 32px desktop */}
+              <div className="rounded-3xl bg-white p-6 sm:p-8 shadow-2xl text-slate-900 border border-slate-100">
                 <h3 className="text-2xl font-bold text-[#0A2351]">Request a Campus Preview</h3>
-                <p className="mt-2 text-sm text-slate-500">Discover how SARATHI can elevate your placement strategy.</p>
+                {/* 🚀 Title to Description: 12px (mt-3) */}
+                <p className="mt-3 text-sm text-slate-500">Discover how SARATHI can elevate your placement strategy.</p>
 
+                {/* 🚀 Subheading to Content: 32px (mt-8) */}
                 <form className="mt-8 space-y-5">
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Representative Name</label>
-                      {/* 🚀 Changed to rounded-2xl for inputs */}
                       <input 
                         type="text" 
                         placeholder="e.g. Dr. Sharma" 
@@ -219,7 +222,6 @@ export default function Home() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Designation</label>
-                      {/* 🚀 Changed to rounded-2xl for inputs */}
                       <input 
                         type="text" 
                         placeholder="e.g. TPO / Principal" 
@@ -230,7 +232,6 @@ export default function Home() {
 
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Institution Name</label>
-                    {/* 🚀 Changed to rounded-2xl for inputs */}
                     <input 
                       type="text" 
                       placeholder="Enter full college name" 
@@ -238,7 +239,6 @@ export default function Home() {
                     />
                   </div>
 
-                  {/* 🚀 Changed to rounded-2xl for the submit button */}
                   <Button type="button" className="mt-4 h-12 w-full rounded-2xl bg-[#F57D14] text-base font-bold text-white hover:bg-[#dd6f11] shadow-lg shadow-[#F57D14]/20 transition-all hover:scale-[1.02]">
                     Book Campus Demo
                     <ArrowRight className="ml-2 h-4 w-4" />
