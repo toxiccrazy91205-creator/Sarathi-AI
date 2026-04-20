@@ -124,6 +124,7 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
     )
   }
 
+  // 🚀 FIXED THE SYNTAX TYPO HERE
   if (error) {
     return (
       <div className="container mx-auto py-20 text-center">
@@ -134,7 +135,8 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
           </Button>
         </Card>
       </div>
-    }
+    )
+  }
 
   if (locked) {
     return (
