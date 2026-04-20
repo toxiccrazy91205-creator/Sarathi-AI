@@ -25,11 +25,10 @@ const App = ({ searchParams }) => {
           margin:       0.4, 
           filename:     'SARATHI_Career_Roadmap.pdf',
           image:        { type: 'jpeg', quality: 1 },
-          // Using 1024px width prevents the text from stretching too wide in PDF mode
           html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024, letterRendering: true }, 
           jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-          // 🚀 FIX: Only protect atomic elements (paragraphs/list items) to prevent giant gaps
-          pagebreak:    { mode: ['css', 'legacy'], avoid: ['.avoid-page-break', '.break-inside-avoid'] } 
+          // 🚀 FIX: Passed as a single string! Also natively protected p, li, and h3 tags!
+          pagebreak:    { mode: ['css', 'legacy'], avoid: '.avoid-page-break, .break-inside-avoid, p, li, h3' } 
         };
 
         await html2pdf().set(opt).from(element).save();
