@@ -13,9 +13,9 @@ const App = ({ searchParams }) => {
 
   const handleDownloadPDF = async () => {
     setIsDownloading(true)
-    setIsPdfMode(true) // Trigger the tighter block layout
+    setIsPdfMode(true)
 
-    // Wait 800ms for the UI to stack and compress
+    // Wait 800ms for the UI to apply the atomic CSS styles
     setTimeout(async () => {
       try {
         const html2pdf = (await import('html2pdf.js')).default;
@@ -27,8 +27,8 @@ const App = ({ searchParams }) => {
           image:        { type: 'jpeg', quality: 1 },
           html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024, letterRendering: true }, 
           jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-          // 🚀 FIX: Passed as a single string! Also natively protected p, li, and h3 tags!
-          pagebreak:    { mode: ['css', 'legacy'], avoid: '.avoid-page-break, .break-inside-avoid, p, li, h3' } 
+          // 🚀 FIX: Let the custom CSS injected in the component handle the logic
+          pagebreak:    { mode: 'css', avoid: '.avoid-page-break' } 
         };
 
         await html2pdf().set(opt).from(element).save();
@@ -61,7 +61,7 @@ const App = ({ searchParams }) => {
           </div>
         )}
 
-        <div id="sarathi-report" className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+        <div id="sarathi-report" className={`bg-white ${isPdfMode ? 'm-0 p-0' : 'rounded-3xl border border-slate-100 shadow-sm overflow-hidden'}`}>
           <ResultDashboardReal 
             assessmentId={assessmentId} 
             onReady={() => setIsReportReady(true)} 
