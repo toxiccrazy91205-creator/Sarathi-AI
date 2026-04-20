@@ -28,7 +28,9 @@ const App = ({ searchParams }) => {
         filename:     'SARATHI_Career_Roadmap.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true }, 
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+        // 🚀 THE CRITICAL FIX: Tells the engine to respect our page-break rules
+        pagebreak:    { mode: ['css', 'legacy'] } 
       };
 
       await html2pdf().set(opt).from(element).save();
