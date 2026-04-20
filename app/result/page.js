@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button'
 const App = ({ searchParams }) => {
   const assessmentId = Array.isArray(searchParams?.id) ? searchParams?.id?.[0] : searchParams?.id || ''
   const [isDownloading, setIsDownloading] = useState(false)
+  
+  // 🚀 NEW: State to track if the AI is finished loading
+  const [isReportReady, setIsReportReady] = useState(false)
 
   // 🚀 PDF Download Logic
   const handleDownloadPDF = async () => {
@@ -40,26 +43,32 @@ const App = ({ searchParams }) => {
     <div className="min-h-screen bg-slate-50 py-4 sm:py-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
         
-        {/* 🟡 Download Button Toolbar */}
-        <div className="flex justify-end mb-6">
-          <Button 
-            onClick={handleDownloadPDF} 
-            disabled={isDownloading}
-            className="h-12 rounded-xl bg-[#F57D14] px-6 font-bold text-white shadow-lg hover:bg-[#dd6f11] transition-all"
-          >
-            {isDownloading ? (
-              <>Generating PDF <Loader2 className="ml-2 h-4 w-4 animate-spin" /></>
-            ) : (
-              <>Download PDF <Download className="ml-2 h-4 w-4" /></>
-            )}
-          </Button>
-        </div>
+        {/* 🟡 Download Button Toolbar - CONDITIONAL RENDER */}
+        {/* 🚀 This will only show up when isReportReady becomes true */}
+        {isReportReady && (
+          <div className="flex justify-end mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <Button 
+              onClick={handleDownloadPDF} 
+              disabled={isDownloading}
+              className="h-12 rounded-2xl bg-[#F57D14] px-6 font-bold text-white shadow-lg hover:bg-[#dd6f11] transition-all"
+            >
+              {isDownloading ? (
+                <>Generating PDF <Loader2 className="ml-2 h-4 w-4 animate-spin" /></>
+              ) : (
+                <>Download PDF <Download className="ml-2 h-4 w-4" /></>
+              )}
+            </Button>
+          </div>
+        )}
 
         {/* 📄 THE SAFE ZONE: Everything inside this div gets printed to the PDF */}
-        <div id="sarathi-report" className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div id="sarathi-report" className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
           
-          {/* Your untouched, fully working dashboard component */}
-          <ResultDashboardReal assessmentId={assessmentId} />
+          {/* 🚀 Pass the setter function down to the dashboard so it can tell this page when it finishes */}
+          <ResultDashboardReal 
+            assessmentId={assessmentId} 
+            onReady={() => setIsReportReady(true)} 
+          />
           
         </div>
       </div>
