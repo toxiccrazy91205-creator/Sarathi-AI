@@ -28,7 +28,6 @@ const hasRealAiAnalysis = (analysis) => {
   )
 }
 
-// 🚀 Accept the isPdfMode prop
 const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
   const [loading, setLoading] = useState(true)
   const [analyzing, setAnalyzing] = useState(false)
@@ -124,7 +123,6 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
     )
   }
 
-  // 🚀 FIXED THE SYNTAX TYPO HERE
   if (error) {
     return (
       <div className="container mx-auto py-20 text-center">
@@ -174,10 +172,10 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
           <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
         </section>
 
-        {/* 🚀 PDF FIX: Toggle grid off if generating PDF */}
-        <div className={`grid gap-8 ${isPdfMode ? 'grid-cols-1' : 'lg:grid-cols-3'}`}>
+        {/* 🚀 PDF FIX: Completely remove grid classes when in PDF mode. Use simple block stacking. */}
+        <div className={isPdfMode ? 'block space-y-8' : 'grid gap-8 lg:grid-cols-3'}>
           
-          <div className={`${isPdfMode ? 'col-span-1' : 'lg:col-span-2'} space-y-8`}>
+          <div className={`${isPdfMode ? 'block' : 'lg:col-span-2'} space-y-8`}>
             <Card className="border-0 shadow-sm overflow-hidden break-inside-avoid">
               <CardHeader className="bg-slate-50 border-b border-slate-100">
                 <CardTitle className="text-2xl text-[#0A2351]">Strategic Executive Summary</CardTitle>
@@ -190,8 +188,8 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
               </CardContent>
             </Card>
 
-            {/* 🚀 PDF FIX: Stack the prime match cards vertically in the PDF */}
-            <div className={`grid gap-6 ${isPdfMode ? 'grid-cols-1' : 'md:grid-cols-3'}`}>
+            {/* 🚀 PDF FIX: Remove grid here too */}
+            <div className={isPdfMode ? 'block space-y-6' : 'grid gap-6 md:grid-cols-3'}>
               {(analysis.top_career_matches || []).map((match, i) => (
                 <Card key={i} className="group border-0 shadow-sm hover:shadow-md transition-all border-l-4 border-l-[#F57D14] break-inside-avoid">
                   <CardContent className="p-6">
@@ -249,10 +247,13 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
           </div>
         </div>
 
+       {/* 🚀 PDF FIX: Force a physical page break right before the Roadmap to make it look like "Chapter 2" */}
+       {isPdfMode && <div className="break-before-page" />}
+       
        <section className="mt-12 break-inside-avoid">
          <h2 className="text-3xl font-bold text-[#0A2351] mb-8">Your 5-Year Career Transformation</h2>
-         {/* 🚀 PDF FIX: Stack the 5-year roadmap vertically in the PDF */}
-         <div className={`grid gap-6 ${isPdfMode ? 'grid-cols-1' : 'lg:grid-cols-3'}`}>
+         {/* 🚀 PDF FIX: Remove grid here too */}
+         <div className={isPdfMode ? 'block space-y-6' : 'grid gap-6 lg:grid-cols-3'}>
            {[
              { 
                label: 'Year 1', 
