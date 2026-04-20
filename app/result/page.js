@@ -9,11 +9,13 @@ const App = ({ searchParams }) => {
   const assessmentId = Array.isArray(searchParams?.id) ? searchParams?.id?.[0] : searchParams?.id || ''
   const [isDownloading, setIsDownloading] = useState(false)
   const [isReportReady, setIsReportReady] = useState(false)
+  
+  // State to trigger the vertical PDF layout
   const [isPdfMode, setIsPdfMode] = useState(false)
 
   const handleDownloadPDF = async () => {
     setIsDownloading(true)
-    setIsPdfMode(true) // Trigger the layout shift to block layout
+    setIsPdfMode(true) // Trigger the layout shift
 
     // Wait 800ms for the UI to stack vertically before snapping the PDF
     setTimeout(async () => {
@@ -28,14 +30,14 @@ const App = ({ searchParams }) => {
           html2canvas:  { scale: 2, useCORS: true, windowWidth: 1200 }, 
           jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
           // 🚀 THE ULTIMATE FIX: Tells the engine to strictly respect our CSS rules
-          pagebreak:    { mode: 'css', avoid: '.avoid-page-break, .break-inside-avoid' } 
+          pagebreak:    { mode: ['css', 'legacy'], avoid: '.avoid-page-break' } 
         };
 
         await html2pdf().set(opt).from(element).save();
       } catch (error) {
         console.error("PDF Generation Failed:", error);
       } finally {
-        setIsPdfMode(false) // Revert back to normal web layout
+        setIsPdfMode(false) // Instantly revert back to the beautiful 3-column web view
         setIsDownloading(false)
       }
     }, 800);
@@ -62,6 +64,7 @@ const App = ({ searchParams }) => {
         )}
 
         <div id="sarathi-report" className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+          {/* Pass the isPdfMode state down to the dashboard */}
           <ResultDashboardReal 
             assessmentId={assessmentId} 
             onReady={() => setIsReportReady(true)} 
