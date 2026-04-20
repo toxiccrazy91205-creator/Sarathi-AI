@@ -28,7 +28,6 @@ const hasRealAiAnalysis = (analysis) => {
   )
 }
 
-// 🚀 NEW: Accept the onReady prop from the parent wrapper
 const ResultDashboardReal = ({ assessmentId, onReady }) => {
   const [loading, setLoading] = useState(true)
   const [analyzing, setAnalyzing] = useState(false)
@@ -45,7 +44,6 @@ const ResultDashboardReal = ({ assessmentId, onReady }) => {
       }
 
       try {
-        // 1. Fetch current record
         const response = await fetch(`/api/results/${assessmentId}`)
         const data = await response.json()
 
@@ -59,7 +57,6 @@ const ResultDashboardReal = ({ assessmentId, onReady }) => {
 
         const currentAssessment = data?.assessment
 
-        // 2. Check if AI already analyzed, otherwise trigger generation
         if (hasRealAiAnalysis(currentAssessment?.ai_analysis)) {
           setAssessment(currentAssessment)
           setLoading(false)
@@ -95,14 +92,12 @@ const ResultDashboardReal = ({ assessmentId, onReady }) => {
     loadResult()
   }, [assessmentId])
 
-  // 🚀 NEW: Tell the parent page to show the PDF button ONLY when everything is fully loaded and ready
   useEffect(() => {
     if (!loading && !analyzing && !error && !locked && assessment) {
       if (onReady) onReady();
     }
   }, [loading, analyzing, error, locked, assessment, onReady]);
 
-  // Data Selectors
   const studentName = useMemo(() => assessment?.user?.name || 'Student', [assessment])
   const analysis = assessment?.ai_analysis || {}
   const profile = analysis?.psychometric_profile || {}
@@ -113,12 +108,6 @@ const ResultDashboardReal = ({ assessmentId, onReady }) => {
     .map(p => p.trim())
     .filter(Boolean)
 
-  const handleDownload = () => {
-    window.print()
-    toast.success('Roadmap saved! Use "Save as PDF" in print settings.')
-  }
-
-  // 🔄 LOADING STATE
   if (loading || analyzing) {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center p-8 text-center">
@@ -128,14 +117,12 @@ const ResultDashboardReal = ({ assessmentId, onReady }) => {
         <h1 className="text-2xl font-bold text-[#0A2351]">Synthesizing Your 5-Year Vision...</h1>
         <p className="mt-2 text-slate-500 max-w-md">Our AI is analyzing 60+ data points to build your custom career transformation roadmap.</p>
         <div className="mt-8 flex items-center gap-2 text-[#F57D14] font-medium">
-          {/* 🚀 FIXED: Now correctly says Gemini 2.5 Flash */}
           <Loader2 className="h-4 w-4 animate-spin" /> Gemini 2.5 Flash Processing
         </div>
       </div>
     )
   }
 
-  // ❌ ERROR STATE
   if (error) {
     return (
       <div className="container mx-auto py-20 text-center">
@@ -149,7 +136,6 @@ const ResultDashboardReal = ({ assessmentId, onReady }) => {
     )
   }
 
-  // 🔒 LOCKED STATE
   if (locked) {
     return (
       <div className="container mx-auto py-20 text-center">
@@ -169,30 +155,29 @@ const ResultDashboardReal = ({ assessmentId, onReady }) => {
     <main className="min-h-screen bg-slate-50 py-8 print:bg-white print:py-0">
       <div className="container mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
         
-        {/* 🔥 MAIN HERO BANNER */}
-        <section className="relative overflow-hidden rounded-[2rem] bg-[#0A2351] p-8 text-white shadow-2xl shadow-[#0A2351]/20 sm:p-12">
+        {/* 🚀 PDF FIX: break-inside-avoid prevents the hero banner from splitting */}
+        <section className="relative overflow-hidden rounded-[2rem] bg-[#0A2351] p-8 text-white shadow-2xl shadow-[#0A2351]/20 sm:p-12 break-inside-avoid">
           <div className="relative z-10 flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
             <div className="max-w-3xl">
               <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#F57D14]">
                 <Sparkles className="h-3 w-3" /> Real-Time AI Analysis
               </div>
               <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
-  {studentName}, you are a <span className="text-[#F57D14]">{analysis.user_archetype}</span>
-</h1>
+                {studentName}, you are a <span className="text-[#F57D14]">{analysis.user_archetype}</span>
+              </h1>
               <p className="mt-6 text-lg leading-relaxed text-white/70">
                 This transformation strategy was custom-built using your unique psychometric signature, mapping your future within the Indian job market.
               </p>
             </div>
           </div>
-          {/* Subtle Background Pattern */}
           <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
         </section>
 
         <div className="grid gap-8 lg:grid-cols-3">
           
-          {/* LEFT: EXECUTIVE SUMMARY */}
           <div className="lg:col-span-2 space-y-8">
-            <Card className="border-0 shadow-sm overflow-hidden">
+            {/* 🚀 PDF FIX: break-inside-avoid keeps summary card intact */}
+            <Card className="border-0 shadow-sm overflow-hidden break-inside-avoid">
               <CardHeader className="bg-slate-50 border-b border-slate-100">
                 <CardTitle className="text-2xl text-[#0A2351]">Strategic Executive Summary</CardTitle>
                 <CardDescription>How SARATHI interprets your unique behavioral fingerprint.</CardDescription>
@@ -204,10 +189,10 @@ const ResultDashboardReal = ({ assessmentId, onReady }) => {
               </CardContent>
             </Card>
 
-            {/* CAREER MATCHES */}
             <div className="grid gap-6 md:grid-cols-3">
               {(analysis.top_career_matches || []).map((match, i) => (
-                <Card key={i} className="group border-0 shadow-sm hover:shadow-md transition-all border-l-4 border-l-[#F57D14]">
+                {/* 🚀 PDF FIX: break-inside-avoid stops Prime Matches from slicing in half */}
+                <Card key={i} className="group border-0 shadow-sm hover:shadow-md transition-all border-l-4 border-l-[#F57D14] break-inside-avoid">
                   <CardContent className="p-6">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Prime Match</p>
                     <h3 className="text-xl font-bold text-[#0A2351] mb-3">{match.career_title}</h3>
@@ -222,9 +207,9 @@ const ResultDashboardReal = ({ assessmentId, onReady }) => {
             </div>
           </div>
 
-          {/* RIGHT: PSYCHOMETRIC SIDEBAR */}
           <div className="space-y-8">
-            <Card className="border-0 bg-[#0A2351]/5 shadow-none">
+            {/* 🚀 PDF FIX: break-inside-avoid */}
+            <Card className="border-0 bg-[#0A2351]/5 shadow-none break-inside-avoid">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-xl text-[#0A2351]">
                   <Compass className="h-5 w-5 text-[#F57D14]" /> Psychometric DNA
@@ -246,7 +231,8 @@ const ResultDashboardReal = ({ assessmentId, onReady }) => {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-sm bg-orange-50/50">
+            {/* 🚀 PDF FIX: break-inside-avoid */}
+            <Card className="border-0 shadow-sm bg-orange-50/50 break-inside-avoid mb-8">
                <CardHeader>
                  <CardTitle className="text-sm uppercase tracking-widest text-orange-800">Growth Warnings</CardTitle>
                </CardHeader>
@@ -264,8 +250,8 @@ const ResultDashboardReal = ({ assessmentId, onReady }) => {
           </div>
         </div>
 
-       {/* 🔥 5-YEAR TRANSFORMATION SECTION - REFINED MAPPING */}
-       <section className="mt-12">
+       {/* 🚀 PDF FIX: break-inside-avoid keeps the roadmap header intact */}
+       <section className="mt-12 break-inside-avoid">
          <h2 className="text-3xl font-bold text-[#0A2351] mb-8">Your 5-Year Career Transformation</h2>
          <div className="grid gap-6 lg:grid-cols-3">
            {[
@@ -291,7 +277,8 @@ const ResultDashboardReal = ({ assessmentId, onReady }) => {
                color: 'bg-[#0A2351]' 
              }
            ].map((step, i) => (
-             <Card key={i} className="relative overflow-hidden border-0 shadow-lg bg-white">
+             {/* 🚀 PDF FIX: break-inside-avoid keeps the individual years from splitting */}
+             <Card key={i} className="relative overflow-hidden border-0 shadow-lg bg-white break-inside-avoid">
                <div className={`h-2 w-full ${step.color}`} />
                <CardHeader>
                  <div className="flex items-center gap-3">
