@@ -301,7 +301,7 @@ const AssessmentFlowPsychometric = () => {
                       <Button variant="ghost" onClick={handlePrevious} className="text-slate-500 hover:text-[#0A2351]">
                         <ArrowLeft className="mr-2 h-4 w-4" /> Previous
                       </Button>
-                      {/* 🚀 FIX: Orange Pill CTA Styling on final view */}
+                      {/* 🚀 FIX: Orange Pill CTA Styling on final step */}
                       <Button onClick={() => handleNext(null)} disabled={!textResponse.trim()} className="h-14 rounded-full bg-[#F57D14] px-4 sm:px-8 font-bold text-white shadow-xl hover:bg-[#dd6f11] transition-all hover:scale-105">
                         {absoluteStep === totalSteps ? "Finish & View Results" : "Next Reflection"} <ArrowRight className="ml-2 h-5 w-5" />
                       </Button>
