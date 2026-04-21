@@ -21,12 +21,13 @@ const App = ({ searchParams }) => {
         const element = document.getElementById('sarathi-report');
         
         const opt = {
-          margin:       0.4, 
+          margin:       [0.4, 0.4, 0.4, 0.4], 
           filename:     'SARATHI_Career_Roadmap.pdf',
           image:        { type: 'jpeg', quality: 1 },
           html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024, letterRendering: true }, 
           jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-          pagebreak:    { mode: ['css', 'legacy'] } 
+          // 🚀 FIX: Explicitly passing the class to the JS engine so it CANNOT ignore it
+          pagebreak:    { mode: ['css', 'legacy'], avoid: '.avoid-page-break' } 
         };
 
         await html2pdf().set(opt).from(element).save();
