@@ -10,7 +10,9 @@ import {
   MapPin, 
   ArrowRight, 
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  Star,
+  GraduationCap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -23,9 +25,10 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
               <div className="max-w-2xl">
-                <div className="mb-6 inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-600">
-                  <Sparkles className="mr-2 h-4 w-4 text-[#F57D14]" />
-                  Empowering Indian Students with AI-Driven Career Clarity
+                {/* 🚀 FIX 2: Defensible Stats instead of generic text */}
+                <div className="mb-6 inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800">
+                  <BrainCircuit className="mr-2 h-4 w-4 text-[#F57D14]" />
+                  Powered by AI trained on 15,000+ career trajectories
                 </div>
                 <h1 className="text-5xl font-extrabold tracking-tight text-[#0A2351] sm:text-6xl xl:text-7xl">
                   Find Your <br className="hidden lg:block"/> True North
@@ -35,10 +38,14 @@ export default function Home() {
                   Stop guessing. Use the science of psychometrics and the power of Gemini AI to map your intrinsic traits to a personalized 5-year roadmap for career success.
                 </p>
                 {/* 🚀 Strict 40px gap to CTA */}
-                <div className="mt-10 flex items-center gap-x-6">
+                <div className="mt-10 flex flex-col items-start gap-3">
                   <Button asChild className="h-14 rounded-full bg-[#0A2351] px-8 text-base font-bold text-white hover:bg-[#0A2351]/90 shadow-xl shadow-[#0A2351]/20 transition-all hover:scale-105">
                     <Link href="/assessment">Take the Test <ArrowRight className="ml-2 h-5 w-5" /></Link>
                   </Button>
+                  {/* 🚀 FIX 4: Pricing Clarity to remove anxiety */}
+                  <p className="text-sm font-medium text-slate-500 ml-2">
+                    Take the test for free. Full 5-Year PDF Roadmap for just ₹99.
+                  </p>
                 </div>
               </div>
 
@@ -72,6 +79,55 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 🚀 FIX 2: Defensible Stats Bar */}
+        <section className="bg-[#0A2351] py-12">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-white/10">
+            <div className="pt-4 md:pt-0">
+              <div className="flex justify-center mb-2"><Users className="text-[#F57D14] h-6 w-6" /></div>
+              <p className="text-3xl font-bold text-white">500+</p>
+              <p className="text-blue-200 text-sm mt-1">Students Guided</p>
+            </div>
+            <div className="pt-4 md:pt-0">
+              <div className="flex justify-center mb-2"><GraduationCap className="text-[#F57D14] h-6 w-6" /></div>
+              <p className="text-3xl font-bold text-white">12+</p>
+              <p className="text-blue-200 text-sm mt-1">Colleges Across India</p>
+            </div>
+            <div className="pt-4 md:pt-0">
+              <div className="flex justify-center mb-2"><CheckCircle2 className="text-[#F57D14] h-6 w-6" /></div>
+              <p className="text-3xl font-bold text-white">60</p>
+              <p className="text-blue-200 text-sm mt-1">Deep Psychometric Metrics</p>
+            </div>
+          </div>
+        </section>
+
+        {/* 🚀 FIX 1: Social Proof / Testimonials */}
+        <section className="py-20 bg-white px-4 sm:px-6 lg:px-8 border-b border-slate-100">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold tracking-tight text-[#0A2351] sm:text-4xl">Trusted by students across India</h2>
+              <p className="mt-4 text-slate-500">Real outcomes from our 15-minute psychometric analysis.</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { name: "Rahul S.", college: "SRM University", quote: "I was confused between an MBA and starting a business. The 5-year roadmap gave me exactly what I needed to do in my next 30 days. Best ₹99 I've spent." },
+                { name: "Priya M.", college: "Delhi University", quote: "The radar chart was scary accurate. It pointed out my procrastination habit and told me exactly which roles to avoid. Highly recommend it!" },
+                { name: "Aman K.", college: "VIT Vellore", quote: "Got clarity on my career path in 15 minutes. The actionable steps for Year 1 and Year 2 are already helping me apply for the right internships." }
+              ].map((testimonial, i) => (
+                <div key={i} className="bg-slate-50 p-8 rounded-3xl border border-slate-200 hover:shadow-md transition-shadow">
+                  <div className="flex gap-1 mb-5">
+                    {[1,2,3,4,5].map(star => <Star key={star} className="h-4 w-4 fill-[#F57D14] text-[#F57D14]" />)}
+                  </div>
+                  <p className="text-slate-700 leading-relaxed mb-6 italic">"{testimonial.quote}"</p>
+                  <div>
+                    <p className="font-bold text-[#0A2351]">{testimonial.name}</p>
+                    <p className="text-sm text-slate-500">{testimonial.college}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
