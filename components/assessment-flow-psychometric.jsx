@@ -12,7 +12,7 @@ import {
   Sparkles, 
   BrainCircuit, 
   LineChart,
-  Lock // 🚀 Added Lock icon for trust copy
+  Lock 
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -67,7 +67,6 @@ const AssessmentFlowPsychometric = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [allAnswers, setAllAnswers] = useState(Array(60).fill(null))
   
-  // 🚀 FIX 3: Removed WhatsApp from State
   const [formData, setFormData] = useState({ name: "", email: "", college: "" })
   const [completedSteps, setCompletedSteps] = useState([])
 
@@ -156,7 +155,6 @@ const AssessmentFlowPsychometric = () => {
   const totalSteps = questionBank.length 
   const progress = (absoluteStep / totalSteps) * 100
   
-  // 🚀 FIX 3: Removed WhatsApp validation logic
   const isFormValid = 
     formData.name.trim() !== "" && 
     formData.email.includes("@") && 
@@ -209,7 +207,6 @@ const AssessmentFlowPsychometric = () => {
           body: JSON.stringify({
             name: formData.name,
             email: formData.email,
-            // 🚀 FIX 3: Removed WhatsApp from payload
             college: formData.college,
             answers: updatedAnswers 
           })
@@ -249,8 +246,9 @@ const AssessmentFlowPsychometric = () => {
             <div className="bg-[#0A2351] px-6 py-4 text-white">
               {!isFormCompleted ? (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium opacity-80">Student Profile Setup</span>
-                  <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">Pre-Assessment</span>
+                  {/* 🚀 FIX: Progress Label Added */}
+                  <span className="text-sm font-medium opacity-80">Step 1 of 2: Profile Setup</span>
+                  <span className="text-xs font-bold text-[#F57D14] uppercase tracking-wider">Profile → Assessment</span>
                 </div>
               ) : (
                 <div className="flex items-center justify-between">
@@ -274,23 +272,21 @@ const AssessmentFlowPsychometric = () => {
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-xl font-bold text-[#0A2351]">Tell us who you are</h3>
-                      {/* 🚀 FIX 4: Pricing clarity upfront */}
                       <p className="text-sm text-slate-500 mt-1">Takes ~15 minutes. No payment required to start.</p>
                     </div>
                     <div className="space-y-4">
                       <input type="text" placeholder="Full Name *" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" />
                       <input type="email" placeholder="Email Address (Where to send the report) *" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" />
-                      {/* 🚀 FIX 3: Removed WhatsApp Input completely */}
                       <input type="text" placeholder="College Name *" value={formData.college} onChange={(e) => setFormData({...formData, college: e.target.value})} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-[#F57D14] focus:outline-none" />
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4">
-                      {/* 🚀 FIX 4: Trust micro-copy near button */}
                       <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 order-2 sm:order-1">
                         <Lock className="w-3.5 h-3.5" /> 
                         <span>Data is secure. Full report unlocks for ₹99.</span>
                       </div>
-                      <Button onClick={handleStartTest} disabled={!isFormValid} className={`order-1 sm:order-2 w-full sm:w-auto h-12 rounded-2xl px-8 font-bold text-white transition-all ${isFormValid ? 'bg-[#F57D14] hover:bg-[#dd6f11]' : 'bg-slate-300 cursor-not-allowed'}`}>
-                        Start Assessment <ArrowRight className="ml-2 h-4 w-4" />
+                      {/* 🚀 FIX: Orange Pill CTA Styling */}
+                      <Button onClick={handleStartTest} disabled={!isFormValid} className={`order-1 sm:order-2 w-full sm:w-auto h-14 rounded-full px-8 font-bold text-white transition-all shadow-lg ${isFormValid ? 'bg-[#F57D14] hover:bg-[#dd6f11] shadow-[#F57D14]/20 hover:scale-105' : 'bg-[#F57D14]/50 cursor-not-allowed'}`}>
+                        Start the Assessment <ArrowRight className="ml-2 h-5 w-5" />
                       </Button>
                     </div>
                   </div>
@@ -305,8 +301,9 @@ const AssessmentFlowPsychometric = () => {
                       <Button variant="ghost" onClick={handlePrevious} className="text-slate-500 hover:text-[#0A2351]">
                         <ArrowLeft className="mr-2 h-4 w-4" /> Previous
                       </Button>
-                      <Button onClick={() => handleNext(null)} disabled={!textResponse.trim()} className="h-12 rounded-2xl bg-[#F57D14] px-4 sm:px-8 font-bold text-white shadow-lg hover:bg-[#dd6f11]">
-                        {absoluteStep === totalSteps ? "Finish & View Results" : "Next Reflection"} <ArrowRight className="ml-2 h-4 w-4" />
+                      {/* 🚀 FIX: Orange Pill CTA Styling on final view */}
+                      <Button onClick={() => handleNext(null)} disabled={!textResponse.trim()} className="h-14 rounded-full bg-[#F57D14] px-4 sm:px-8 font-bold text-white shadow-xl hover:bg-[#dd6f11] transition-all hover:scale-105">
+                        {absoluteStep === totalSteps ? "Finish & View Results" : "Next Reflection"} <ArrowRight className="ml-2 h-5 w-5" />
                       </Button>
                     </div>
                   </div>
