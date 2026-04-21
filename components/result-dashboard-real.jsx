@@ -17,11 +17,14 @@ import {
   Loader2,
   BookOpen, 
   TrendingUp, 
-  Timer 
+  Timer,
+  Activity
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+// 🚀 Recharts Imports
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Tooltip } from 'recharts'
 
 const hasRealAiAnalysis = (analysis) => {
   return Boolean(
@@ -112,6 +115,16 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
     .map(p => p.trim())
     .filter(Boolean)
 
+  // 🚀 Map AI scores to the Radar Chart Format safely
+  const rawScores = analysis?.radar_chart_scores || {}
+  const chartData = [
+    { subject: 'Personality', score: Number(rawScores["Personality"]) || 0, fullMark: 100 },
+    { subject: 'Aptitude', score: Number(rawScores["Aptitude"]) || 0, fullMark: 100 },
+    { subject: 'Motivation', score: Number(rawScores["Motivation"]) || 0, fullMark: 100 },
+    { subject: 'Interests', score: Number(rawScores["Career Interests"]) || 0, fullMark: 100 },
+    { subject: 'Behaviour', score: Number(rawScores["Behavioural Tendencies"]) || 0, fullMark: 100 },
+  ]
+
   if (loading || analyzing) {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center p-8 text-center">
@@ -163,6 +176,9 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
           .avoid-page-break {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
+            display: inline-block !important;
+            width: 100% !important;
+            vertical-align: top !important;
           }
         `}} />
       )}
@@ -236,8 +252,33 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
 
           <div className={isPdfMode ? 'block' : 'space-y-8'}>
             
+            {/* 🚀 NEW: The Interactive Radar Chart */}
             <div className="avoid-page-break">
-              {isPdfMode && <h2 className="text-2xl font-bold text-[#0A2351] mb-3">Psychometric Profile & Growth</h2>}
+              {isPdfMode && <h2 className="text-2xl font-bold text-[#0A2351] mb-3">Psychometric Dimensions</h2>}
+              <Card className={`border-0 bg-[#0A2351]/5 ${isPdfMode ? 'mb-4' : 'shadow-none'}`}>
+                <CardHeader className={isPdfMode ? 'p-4 pb-0' : 'pb-0'}>
+                  <CardTitle className="flex items-center gap-2 text-xl text-[#0A2351]">
+                    <Activity className="h-5 w-5 text-[#F57D14]" /> Dimension Map
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className={isPdfMode ? 'p-4 pt-0' : 'p-6 pt-0'}>
+                  <div className="h-[250px] w-full mt-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
+                        <PolarGrid stroke="#cbd5e1" />
+                        <PolarAngleAxis dataKey="subject" tick={{ fill: '#475569', fontSize: 10, fontWeight: 600 }} />
+                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                        {/* isAnimationActive={false} guarantees it renders perfectly in the PDF immediately */}
+                        <Radar name="Score" dataKey="score" stroke="#F57D14" fill="#F57D14" fillOpacity={0.4} isAnimationActive={false} />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="avoid-page-break">
+              {isPdfMode && <h2 className="text-2xl font-bold text-[#0A2351] mb-3 mt-4">Psychometric Profile & Growth</h2>}
               <Card className={`border-0 bg-[#0A2351]/5 ${isPdfMode ? 'mb-4' : 'shadow-none'}`}>
                 <CardHeader className={isPdfMode ? 'p-4 pb-2' : ''}>
                   <CardTitle className="flex items-center gap-2 text-xl text-[#0A2351]">
@@ -281,7 +322,6 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
           </div>
         </div>
 
-       {/* 🚀 NEW COLOR: Vibrant Emerald/Teal Action Banner */}
        {immediateAction?.next_30_days && (
          <section className={`avoid-page-break ${isPdfMode ? 'mt-4 mb-5' : 'mt-8'}`}>
            <Card className="border-0 shadow-lg bg-gradient-to-r from-emerald-600 to-teal-800 text-white">
