@@ -36,10 +36,16 @@ OUTPUT FORMAT (Respond ONLY with valid JSON):
   "potential_blind_spots": [
     "Specific risk based on data (e.g., 'Your procrastination pattern indicated in Question 48 presents a severe risk for self-structured roles.')"
   ],
+  "immediate_action_plan": {
+    "next_30_days": "One specific, highly actionable step to take this month (e.g., 'Enroll in the Google Data Analytics Coursera track').",
+    "success_metric": "How to measure completion."
+  },
   "five_year_roadmap": {
-    "year_1": "Specific certs/actions based on their exact career interest scores.",
-    "year_3": "Mid-level milestone.",
-    "year_5": "Leadership milestone mapping to their role model or dream career."
+    "year_1": "Foundation: Specific certs/actions.",
+    "year_2": "Skill Application: First internships or specialized projects.",
+    "year_3": "Market Acceleration: Mid-level milestone.",
+    "year_4": "Strategic Networking: Industry positioning and advanced portfolio building.",
+    "year_5": "Leadership milestone mapping to their role model."
   }
 }`
 
