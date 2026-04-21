@@ -336,10 +336,8 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
          </section>
        )}
 
-       {/* 🚀 THE FIX: Physical height (1px) combined with strict page breaks */}
        {isPdfMode && <div className="html2pdf__page-break" style={{ pageBreakBefore: 'always', display: 'block', height: '1px', width: '100%', backgroundColor: 'transparent' }}></div>}
        
-       {/* 🚀 THE FIX: Using 'pt-4' (padding) instead of 'mt-4' (margin) so the engine doesn't miscalculate the Y-coordinate */}
        <section className={isPdfMode ? 'pt-4 mb-0 pb-0' : 'mt-12'}>
          {isPdfMode && <h2 className="text-2xl font-bold text-[#0A2351] mb-4">Your 5-Year Career Transformation</h2>}
          
@@ -381,11 +379,12 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
                color: 'bg-[#0A2351]' 
              }
            ].filter(step => step.data).map((step, i) => ( 
-             <div key={i} className={`avoid-page-break ${isPdfMode ? 'mb-4' : ''}`}>
+             <div key={i} className={isPdfMode ? 'mb-4' : ''}>
                <Card className={isPdfMode ? 'border border-slate-200 bg-white' : 'border-0 shadow-lg bg-white relative overflow-hidden'}>
                  <div className={`h-2 w-full ${step.color}`} />
                  <CardHeader className={isPdfMode ? 'p-4 pb-2' : ''}>
-                   <div className="flex items-center gap-3">
+                   {/* 🚀 Restored the armor to the header content */}
+                   <div className="flex items-center gap-3 avoid-page-break">
                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-white ${step.color}`}>
                        <step.icon className="h-5 w-5" />
                      </div>
@@ -396,7 +395,8 @@ const ResultDashboardReal = ({ assessmentId, onReady, isPdfMode }) => {
                    </div>
                  </CardHeader>
                  <CardContent className={isPdfMode ? 'p-4 pt-2' : ''}>
-                   <p className="text-sm leading-relaxed text-slate-600">
+                   {/* 🚀 Restored the armor strictly to the text paragraph */}
+                   <p className="text-sm leading-relaxed text-slate-600 avoid-page-break">
                      {step.data}
                    </p>
                  </CardContent>
