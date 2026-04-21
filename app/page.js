@@ -20,12 +20,11 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <main>
-        {/* 🚀 HERO SECTION - Fixed Padding (80px mobile, 96px desktop) */}
-        <section className="relative overflow-hidden bg-white py-20 lg:py-24">
+        {/* 🚀 HERO SECTION (Added id="home" and scroll-mt-36) */}
+        <section id="home" className="scroll-mt-36 relative overflow-hidden bg-white py-20 lg:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
               <div className="max-w-2xl">
-                {/* 🚀 FIX 2: Defensible Stats instead of generic text */}
                 <div className="mb-6 inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800">
                   <BrainCircuit className="mr-2 h-4 w-4 text-[#F57D14]" />
                   Powered by AI trained on 15,000+ career trajectories
@@ -33,16 +32,13 @@ export default function Home() {
                 <h1 className="text-5xl font-extrabold tracking-tight text-[#0A2351] sm:text-6xl xl:text-7xl">
                   Find Your <br className="hidden lg:block"/> True North
                 </h1>
-                {/* 🚀 Strict 16px gap below heading */}
                 <p className="mt-4 text-lg leading-8 text-slate-600 sm:max-w-md lg:max-w-none">
                   Stop guessing. Use the science of psychometrics and the power of Gemini AI to map your intrinsic traits to a personalized 5-year roadmap for career success.
                 </p>
-                {/* 🚀 Strict 40px gap to CTA */}
                 <div className="mt-10 flex flex-col items-start gap-3">
                   <Button asChild className="h-14 rounded-full bg-[#0A2351] px-8 text-base font-bold text-white hover:bg-[#0A2351]/90 shadow-xl shadow-[#0A2351]/20 transition-all hover:scale-105">
                     <Link href="/assessment">Take the Test <ArrowRight className="ml-2 h-5 w-5" /></Link>
                   </Button>
-                  {/* 🚀 FIX 4: Pricing Clarity to remove anxiety */}
                   <p className="text-sm font-medium text-slate-500 ml-2">
                     Take the test for free. Full 5-Year PDF Roadmap for just ₹99.
                   </p>
@@ -50,7 +46,6 @@ export default function Home() {
               </div>
 
               <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
-                {/* 🚀 Card inner padding: 24px mobile, 32px desktop */}
                 <div className="rounded-[32px] bg-[#0A2351] p-6 sm:p-8 shadow-2xl ring-1 ring-white/10">
                   <div className="mb-6 rounded-2xl bg-white/10 p-5 backdrop-blur-sm border border-white/10">
                     <div className="flex items-center justify-between">
@@ -83,7 +78,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 🚀 FIX 2: Defensible Stats Bar */}
+        {/* STATS BAR */}
         <section className="bg-[#0A2351] py-12">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-white/10">
             <div className="pt-4 md:pt-0">
@@ -104,8 +99,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 🚀 FIX 1: Social Proof / Testimonials */}
-        <section className="py-20 bg-white px-4 sm:px-6 lg:px-8 border-b border-slate-100">
+        {/* 🚀 TESTIMONIALS (Added id="about" and scroll-mt-36) */}
+        <section id="about" className="scroll-mt-36 py-20 bg-white px-4 sm:px-6 lg:px-8 border-b border-slate-100">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold tracking-tight text-[#0A2351] sm:text-4xl">Trusted by students across India</h2>
@@ -133,27 +128,21 @@ export default function Home() {
         </section>
 
         {/* 🧬 METHODOLOGY SECTION */}
-        <section id="methodology" className="scroll-mt-24 bg-slate-50 py-20 lg:py-24 border-t border-slate-100">
+        <section id="methodology" className="scroll-mt-36 bg-slate-50 py-20 lg:py-24 border-t border-slate-100">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            {/* 🚀 Subheading to cards: 40px (mb-10) */}
             <div className="mb-10 text-center">
               <h2 className="text-3xl font-bold tracking-tight text-[#0A2351] sm:text-4xl">The Science Behind the Roadmap</h2>
-              {/* 🚀 Heading to subheading: 16px (mt-4) */}
               <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-slate-600">
                 SARATHI eliminates the "hit-or-miss" approach of traditional counseling. We leverage proprietary psychometric data processed via the Gemini 2.5 Flash engine to provide a blueprint that evolves with the Indian job market.
               </p>
             </div>
             
-            {/* 🚀 Gap between cards: 24px (gap-6) */}
             <div className="grid gap-6 md:grid-cols-3">
-              {/* 🚀 Card inner padding: 24px mobile, 32px desktop */}
               <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 text-center transition-all hover:shadow-xl hover:-translate-y-2 group">
-                {/* 🚀 Icon to Title: 20px (mb-5) */}
                 <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#0A2351]/5 text-[#0A2351] group-hover:bg-[#0A2351] group-hover:text-white transition-colors duration-300">
                   <Target className="h-8 w-8" />
                 </div>
                 <h3 className="text-xl font-bold text-[#0A2351]">Multi-Pillar Evaluation</h3>
-                {/* 🚀 Title to Description: 12px (mt-3) */}
                 <p className="mt-3 text-sm leading-6 text-slate-600">
                   A comprehensive deep-dive into Personality, Interests, Aptitude, Motivation, and Behavioral tendencies to build a 360° student profile.
                 </p>
@@ -183,7 +172,7 @@ export default function Home() {
         </section>
 
         {/* 🏢 FOR INSTITUTIONS SECTION */}
-        <section id="institutions" className="scroll-mt-24 bg-white py-20 lg:py-24">
+        <section id="institutions" className="scroll-mt-36 bg-white py-20 lg:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid items-center gap-12 lg:grid-cols-2">
               <div className="order-2 lg:order-1">
@@ -191,11 +180,9 @@ export default function Home() {
                   Institutional Partnership
                 </div>
                 <h2 className="text-3xl font-bold tracking-tight text-[#0A2351] sm:text-4xl">Empowering College Placement Cells</h2>
-                {/* 🚀 Heading to subheading: 16px (mt-4) */}
                 <p className="mt-4 text-base leading-relaxed text-slate-600">
                   SARATHI partners with forward-thinking universities to modernize their placement infrastructure. Our bulk-assessment platform gives TPOs real-time data to bridge the gap between student potential and industry requirements.
                 </p>
-                {/* 🚀 Subheading to Content: 32px (mt-8) */}
                 <ul className="mt-8 space-y-4">
                   {[
                     'Batch-level aptitude and skill gap analytics', 
@@ -222,12 +209,12 @@ export default function Home() {
         </section>
 
         {/* 🤝 CONTACT SECTION */}
-       <section id="contact" className="scroll-mt-24 bg-[#0A2351] py-20 lg:py-24 text-white">
+       <section id="contact" className="scroll-mt-36 bg-[#0A2351] py-20 lg:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-24 items-center">
               <div className="space-y-10">
                 <div>
-                  <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                  <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
                     Bring SARATHI to <br className="hidden sm:block" /> Your Campus
                   </h2>
                   <p className="mt-4 max-w-lg text-base leading-relaxed text-white/80">
@@ -242,7 +229,7 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white/60 uppercase tracking-widest">Enterprise Sales</p>
-                      <p className="text-lg font-semibold">+91 8920857008</p>
+                      <p className="text-lg font-semibold text-white">+91 8920857008</p>
                     </div>
                   </div>
                   
@@ -252,20 +239,17 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white/60 uppercase tracking-widest">Partnerships</p>
-                      <p className="text-lg font-semibold">partners@sarathi-ai.in</p>
+                      <p className="text-lg font-semibold text-white">partners@sarathi-ai.in</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* B2B Demo Form */}
-              {/* 🚀 Card inner padding: 24px mobile, 32px desktop */}
               <div className="rounded-3xl bg-white p-6 sm:p-8 shadow-2xl text-slate-900 border border-slate-100">
                 <h3 className="text-2xl font-bold text-[#0A2351]">Request a Campus Preview</h3>
-                {/* 🚀 Title to Description: 12px (mt-3) */}
                 <p className="mt-3 text-sm text-slate-500">Discover how SARATHI can elevate your placement strategy.</p>
 
-                {/* 🚀 Subheading to Content: 32px (mt-8) */}
                 <form className="mt-8 space-y-5">
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div className="space-y-2">
