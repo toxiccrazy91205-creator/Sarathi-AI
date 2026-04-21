@@ -29,15 +29,22 @@ export default function Home() {
                   <BrainCircuit className="mr-2 h-4 w-4 text-[#F57D14]" />
                   Powered by AI trained on 15,000+ career trajectories
                 </div>
+                
+                {/* 🚀 FIX: Concrete Output Headline */}
                 <h1 className="text-5xl font-extrabold tracking-tight text-[#0A2351] sm:text-6xl xl:text-7xl">
-                  Find Your <br className="hidden lg:block"/> True North
+                  Get Your Personalized <br className="hidden lg:block"/><span className="text-[#F57D14]">5-Year Career Roadmap</span>
                 </h1>
+                <p className="mt-6 text-xl font-bold text-[#0A2351]">
+                  Find Your True North in 15 Minutes.
+                </p>
+
                 <p className="mt-4 text-lg leading-8 text-slate-600 sm:max-w-md lg:max-w-none">
                   Stop guessing. Use the science of psychometrics and the power of Gemini AI to map your intrinsic traits to a personalized 5-year roadmap for career success.
                 </p>
                 <div className="mt-10 flex flex-col items-start gap-3">
-                  <Button asChild className="h-14 rounded-full bg-[#0A2351] px-8 text-base font-bold text-white hover:bg-[#0A2351]/90 shadow-xl shadow-[#0A2351]/20 transition-all hover:scale-105">
-                    <Link href="/assessment">Take the Test <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                  {/* 🚀 FIX: Standardized Orange Pill CTA */}
+                  <Button asChild className="h-14 rounded-full bg-[#F57D14] px-8 text-base font-bold text-white hover:bg-[#dd6f11] shadow-xl shadow-[#F57D14]/20 transition-all hover:scale-105">
+                    <Link href="/assessment">Start the Assessment <ArrowRight className="ml-2 h-5 w-5" /></Link>
                   </Button>
                   <p className="text-sm font-medium text-slate-500 ml-2">
                     Take the test for free. Full 5-Year PDF Roadmap for just ₹99.
@@ -99,7 +106,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 🚀 TESTIMONIALS (Tightened padding to bring content up) */}
+        {/* TESTIMONIALS */}
         <section id="about" className="scroll-mt-24 py-12 lg:py-16 bg-white px-4 sm:px-6 lg:px-8 border-b border-slate-100">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-12">
@@ -127,7 +134,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 🧬 METHODOLOGY SECTION (Tightened padding to bring content up) */}
+        {/* METHODOLOGY SECTION */}
         <section id="methodology" className="scroll-mt-24 bg-slate-50 py-12 lg:py-16 border-t border-slate-100">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-12 text-center">
@@ -171,7 +178,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 🏢 FOR INSTITUTIONS SECTION (Tightened padding to bring content up) */}
+        {/* FOR INSTITUTIONS SECTION */}
         <section id="institutions" className="scroll-mt-24 bg-white py-12 lg:py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid items-center gap-12 lg:grid-cols-2">
@@ -208,7 +215,35 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 🤝 CONTACT SECTION (Tightened padding to bring content up) */}
+        {/* 🚀 FIX: FAQ SECTION ADDED */}
+        <section className="bg-slate-50 py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-100">
+          <div className="container mx-auto max-w-3xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold tracking-tight text-[#0A2351] sm:text-4xl">Frequently Asked Questions</h2>
+            </div>
+            <div className="space-y-4">
+              {[
+                { q: "Is my personal data secure?", a: "Absolutely. We only collect basic profile details to generate your report. Your data is encrypted and never sold to third parties." },
+                { q: "How long does the assessment take?", a: "The assessment consists of 60 targeted psychological and situational questions and takes approximately 15 minutes to complete." },
+                { q: "Do I have to pay before taking the test?", a: "No! The assessment is 100% free to take. You only pay a small one-time fee of ₹99 at the very end to unlock and download your full 5-year PDF roadmap." },
+                { q: "Can I retake the assessment?", a: "Yes, you can retake the assessment if you feel your goals or interests have significantly changed, though we recommend acting on your first roadmap for at least 6 months." },
+                { q: "What format is the final report?", a: "You will receive a highly detailed, interactive web dashboard mapping out your 5-year plan, along with a downloadable PDF document that you can keep forever." }
+              ].map((faq, i) => (
+                <details key={i} className="group rounded-2xl bg-white p-6 shadow-sm border border-slate-200 [&_summary::-webkit-details-marker]:hidden cursor-pointer transition-all hover:border-[#F57D14]">
+                  <summary className="flex items-center justify-between font-bold text-[#0A2351] text-lg">
+                    {faq.q}
+                    <span className="transition duration-300 group-open:rotate-180 text-[#F57D14]">
+                      <svg fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                    </span>
+                  </summary>
+                  <p className="mt-4 text-slate-600 leading-relaxed font-medium">{faq.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CONTACT SECTION */}
        <section id="contact" className="scroll-mt-24 bg-[#0A2351] py-12 lg:py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-24 items-center">
@@ -279,9 +314,20 @@ export default function Home() {
                     />
                   </div>
 
-                  <Button type="button" className="mt-4 h-12 w-full rounded-2xl bg-[#F57D14] text-base font-bold text-white hover:bg-[#dd6f11] shadow-lg shadow-[#F57D14]/20 transition-all hover:scale-[1.02]">
+                  {/* 🚀 FIX: Added B2B Email Contact Field */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Official Email</label>
+                    <input 
+                      type="email" 
+                      placeholder="e.g. director@college.edu" 
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm focus:border-[#F57D14] focus:outline-none focus:ring-1 focus:ring-[#F57D14] transition-all"
+                    />
+                  </div>
+
+                  {/* 🚀 FIX: CTA Standardized to match the top Orange Pill */}
+                  <Button type="button" className="mt-4 h-14 w-full rounded-full bg-[#F57D14] text-base font-bold text-white hover:bg-[#dd6f11] shadow-xl shadow-[#F57D14]/20 transition-all hover:scale-105">
                     Book Campus Demo
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </form>
               </div>
