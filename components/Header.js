@@ -15,8 +15,9 @@ export default function Header() {
         
         {/* 🚀 STRIP-STYLE LOGO WITH TAGLINE */}
         <div className="flex items-center">
-          <Link href="/" className="flex items-center gap-3 sm:gap-5">
-            <div className="h-10 sm:h-16 flex items-center [&>svg]:h-full [&>svg]:w-auto">
+          <Link href="/" className="flex items-center gap-3 sm:gap-5 hover:opacity-90 transition-opacity">
+            {/* 🚀 FIX: Simplified wrapper for the new horizontal logo */}
+            <div className="flex items-center">
                <SarathiLogo />
             </div>
             {/* Vertical Divider Line */}
