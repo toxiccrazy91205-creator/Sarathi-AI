@@ -17,7 +17,6 @@ import { Progress } from '@/components/ui/progress'
 import {
   assessmentSections,
   assessmentQuestions,
-  // Removed toNumericAnswers from import as we built a safer internal parser
 } from '@/lib/psychometric-assessment'
 
 // ─────────────────────────────────────────────
@@ -92,8 +91,11 @@ const AssessmentFlowPsychometric = () => {
 
   const [isFormCompleted, setIsFormCompleted] = useState(false)
   const [absoluteStep, setAbsoluteStep] = useState(1)
+  const [highestStep, setHighestStep] = useState(1) // Tracks the furthest question reached for the Map
   const [currentSectionIdx, setCurrentSectionIdx] = useState(0)
   const [textResponse, setTextResponse] = useState('')
+  
+  const [isTransitioning, setIsTransitioning] = useState(false) // Prevents double-tap skipping
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState(null)
 
@@ -109,6 +111,11 @@ const AssessmentFlowPsychometric = () => {
   const isLastStep = absoluteStep === totalSteps
   const currentSection = assessmentSections[currentSectionIdx]
 
+  // Track the furthest step reached so users can freely navigate backwards and forwards via the Map
+  useEffect(() => {
+    setHighestStep((prev) => Math.max(prev, absoluteStep))
+  }, [absoluteStep])
+
   useEffect(() => {
     let count = 0
     for (let i = 0; i < assessmentSections.length; i++) {
@@ -120,7 +127,6 @@ const AssessmentFlowPsychometric = () => {
     }
   }, [absoluteStep])
 
-  // 🚀 FIX: Added answersMap to dependency array so it doesn't erase text when going "Previous"
   useEffect(() => {
     if (isOpenEnded) {
       setTextResponse(answersMap[currentQuestion.id] || '')
@@ -137,19 +143,16 @@ const AssessmentFlowPsychometric = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  // 🚀 FIX: Extracted submission logic to run on the perfectly updated state
   const submitAssessment = async (finalMap) => {
     setIsSubmitting(true)
     setSubmitError(null)
 
     try {
-      // Build the ordered array safely using our known IDs
       const orderedAnswers = assessmentQuestions.map(q => finalMap[q.id])
 
-      // Verify all 60 are present with a specific, helpful error message
       const missingIndex = orderedAnswers.findIndex(a => a === undefined || a === null || a === '')
       if (missingIndex !== -1) {
-        throw new Error(`Question ${missingIndex + 1} was skipped or not saved properly. Please click 'Previous' to check your answers.`)
+        throw new Error(`Question ${missingIndex + 1} is missing an answer. Please use the Assessment Map below to jump back and answer it!`)
       }
 
       const response = await fetch('/api/submit-assessment', {
@@ -178,10 +181,14 @@ const AssessmentFlowPsychometric = () => {
       console.error('Submission error:', error)
       setSubmitError(error.message || 'Something went wrong. Please try again.')
       setIsSubmitting(false)
+      setIsTransitioning(false)
     }
   }
 
   const handleNext = async (selectedOptionValue = null) => {
+    if (isTransitioning) return // Double-tap protection
+
+    setIsTransitioning(true)
     const qId = currentQuestion.id
     const finalAnswer = isOpenEnded ? textResponse.trim() : selectedOptionValue
 
@@ -189,12 +196,10 @@ const AssessmentFlowPsychometric = () => {
       setCompletedSteps((prev) => [...prev, absoluteStep])
     }
 
-    // 🚀 FIX: Functional state update guarantees the final answer is saved before submitting!
     setAnswersMap((prevMap) => {
       const newMap = { ...prevMap, [qId]: finalAnswer }
       
       if (isLastStep) {
-        // Trigger submission asynchronously using the guaranteed fresh map
         submitAssessment(newMap)
       }
       return newMap
@@ -204,12 +209,15 @@ const AssessmentFlowPsychometric = () => {
       setTimeout(() => {
         setAbsoluteStep((prev) => prev + 1)
         setTextResponse('')
+        setIsTransitioning(false) // Unlock buttons for the next question
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }, 300)
     }
   }
 
   const handlePrevious = () => {
+    if (isTransitioning) return
+    
     if (absoluteStep > 1) {
       setAbsoluteStep((prev) => prev - 1)
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -334,19 +342,22 @@ const AssessmentFlowPsychometric = () => {
                       className="w-full h-40 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm focus:border-[#F57D14] focus:outline-none focus:ring-1 focus:ring-[#F57D14]"
                     />
                     {submitError && (
-                      <p className="text-sm text-red-500 font-medium bg-red-50 p-3 rounded-lg border border-red-100">{submitError}</p>
+                      <div className="text-sm text-red-600 font-bold bg-red-50 p-4 rounded-xl border border-red-200">
+                        {submitError}
+                      </div>
                     )}
                     <div className="flex items-center justify-between pt-6">
                       <Button
                         variant="ghost"
                         onClick={handlePrevious}
+                        disabled={isTransitioning}
                         className="text-slate-500 hover:text-[#0A2351]"
                       >
                         <ArrowLeft className="mr-2 h-4 w-4" /> Previous
                       </Button>
                       <Button
                         onClick={() => handleNext(null)}
-                        disabled={!canProceedOpenEnded}
+                        disabled={!canProceedOpenEnded || isTransitioning}
                         className="h-14 rounded-full bg-[#F57D14] px-4 sm:px-8 font-bold text-white shadow-xl hover:bg-[#dd6f11] transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isLastStep ? 'Finish & View Results' : 'Next Reflection'}{' '}
@@ -374,14 +385,16 @@ const AssessmentFlowPsychometric = () => {
                       {currentQuestion.options.map((opt) => {
                         const isSelected = currentAnswer === opt.value
                         return (
+                          // Mobile-friendly active states and transition lock applied here
                           <button
                             key={opt.value}
                             onClick={() => handleNext(opt.value)}
-                            className={`w-full rounded-2xl border p-4 text-left text-sm font-medium transition-all ${
+                            disabled={isTransitioning}
+                            className={`w-full rounded-2xl border p-4 text-left text-sm font-medium transition-all duration-200 ${
                               isSelected
-                                ? 'border-[#F57D14] bg-[#F57D14]/5 text-[#F57D14]'
-                                : 'border-slate-200 hover:border-[#F57D14] hover:bg-[#F57D14]/5 hover:text-[#F57D14]'
-                            }`}
+                                ? 'border-[#F57D14] bg-[#F57D14]/5 text-[#F57D14] shadow-[0_0_0_1px_#F57D14]'
+                                : 'border-slate-200 text-slate-700 bg-white active:scale-[0.98] active:border-[#F57D14] active:bg-[#F57D14]/5'
+                            } ${isTransitioning ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                           >
                             {opt.label}
                           </button>
@@ -393,6 +406,7 @@ const AssessmentFlowPsychometric = () => {
                       <Button
                         variant="ghost"
                         onClick={handlePrevious}
+                        disabled={isTransitioning}
                         className="text-slate-500 hover:text-[#0A2351]"
                       >
                         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -403,26 +417,43 @@ const AssessmentFlowPsychometric = () => {
                 )}
               </div>
 
-              {/* ── ASSESSMENT MAP ── */}
+              {/* ── INTERACTIVE ASSESSMENT MAP ── */}
               {isFormCompleted && !isSubmitting && (
                 <div className="mt-12 border-t border-slate-100 pt-8">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-4">
-                    Assessment Map
-                  </p>
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Assessment Map
+                    </p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#F57D14]">
+                      Tap a circle to jump
+                    </p>
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {assessmentQuestions.map((_, i) => {
                       const stepNum = i + 1
                       const isCompleted = completedSteps.includes(stepNum)
                       const isCurrent = absoluteStep === stepNum
+                      const isClickable = stepNum <= highestStep && !isTransitioning
+
                       return (
-                        <div
+                        <button
                           key={i}
+                          onClick={() => {
+                            if (isClickable) {
+                              setAbsoluteStep(stepNum)
+                              window.scrollTo({ top: 0, behavior: 'smooth' })
+                            }
+                          }}
+                          disabled={!isClickable}
+                          title={isClickable ? `Jump to Question ${stepNum}` : `Locked`}
                           className={`flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-bold transition-all ${
                             isCompleted ? 'bg-[#F57D14] text-white' : 'bg-slate-100 text-slate-400'
-                          } ${isCurrent ? 'ring-2 ring-[#0A2351] ring-offset-2' : ''}`}
+                          } ${isCurrent ? 'ring-2 ring-[#0A2351] ring-offset-2' : ''} ${
+                            isClickable ? 'cursor-pointer hover:scale-110 active:scale-95' : 'opacity-50 cursor-not-allowed'
+                          }`}
                         >
                           {stepNum}
-                        </div>
+                        </button>
                       )
                     })}
                   </div>
