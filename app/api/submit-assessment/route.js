@@ -1,72 +1,149 @@
 import { NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '../../../lib/supabase'
 
+const EXPECTED_ANSWER_COUNT = 60
+
 export async function POST(request) {
   try {
     const body = await request.json()
-    // 🚀 FIX: Removed whatsapp from the incoming request payload
     const { name, email, college, answers } = body
+
+    // ── 1. Input validation ──────────────────────────────────────────
+    if (!name || !email || !college) {
+      return NextResponse.json(
+        { error: 'Missing required fields: name, email, college' },
+        { status: 400 }
+      )
+    }
+
+    if (!answers || !Array.isArray(answers)) {
+      return NextResponse.json(
+        { error: 'Answers must be an array' },
+        { status: 400 }
+      )
+    }
+
+    // Critical: ensure all 60 answers are present so Gemini gets
+    // correctly aligned question→answer mapping
+    if (answers.length !== EXPECTED_ANSWER_COUNT) {
+      return NextResponse.json(
+        {
+          error: `Expected ${EXPECTED_ANSWER_COUNT} answers, received ${answers.length}. Assessment incomplete.`,
+        },
+        { status: 400 }
+      )
+    }
+
+    // Ensure no null/undefined slots in the array
+    const hasEmptyAnswers = answers.some(
+      (a) => a === null || a === undefined || a === ''
+    )
+    if (hasEmptyAnswers) {
+      return NextResponse.json(
+        { error: 'All 60 questions must be answered before submitting.' },
+        { status: 400 }
+      )
+    }
+
     const supabase = getSupabaseAdmin()
 
-    // 1. Check if user already exists by Email
-    let userId = null;
-    const { data: existingUser } = await supabase.from('users').select('id').eq('email', email).single()
-    
+    // ── 2. Upsert user ───────────────────────────────────────────────
+    let userId = null
+
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .single()
+
     if (existingUser) {
-      // User exists! Grab their ID.
-      userId = existingUser.id;
-      
-      // 🚀 FIX: Removed whatsapp from the update call
+      userId = existingUser.id
+
       const { error: updateError } = await supabase
         .from('users')
-        .update({ 
-          name: name, 
-          college: college 
-        })
-        .eq('id', userId);
-        
-      if (updateError) {
-        console.error("Failed to update user details", updateError);
-      }
+        .update({ name, college })
+        .eq('id', userId)
 
+      if (updateError) {
+        console.error('Failed to update user details:', updateError)
+      }
     } else {
-      // Completely new user! Create a brand new profile.
-      // 🚀 FIX: Removed whatsapp from the insert call
-      const { data: user, error: userError } = await supabase
+      const { data: newUser, error: userError } = await supabase
         .from('users')
-        .insert([{ 
-          name: name, 
-          email: email, 
-          college: college 
-        }])
+        .insert([{ name, email, college }])
         .select('id')
         .single()
 
       if (userError) {
-        return NextResponse.json({ error: 'User Table Error', details: userError }, { status: 500 })
+        return NextResponse.json(
+          { error: 'Failed to create user', details: userError.message },
+          { status: 500 }
+        )
       }
-      userId = user.id
+      userId = newUser.id
     }
 
-    // 2. Save their 60-question Assessment to the database
+    // ── 3. Duplicate assessment guard ────────────────────────────────
+    // If the student already has a completed + paid assessment,
+    // return the existing one instead of creating a duplicate
+    const { data: existingAssessment } = await supabase
+      .from('assessments')
+      .select('id, ai_analysis_result')
+      .eq('user_id', userId)
+      .eq('payment_status', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (existingAssessment) {
+      // Student is re-submitting — update their answers but keep the same row
+      const { error: updateError } = await supabase
+        .from('assessments')
+        .update({
+          raw_answers: answers,
+          ai_analysis_result: null, // Clear old AI result so it regenerates
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existingAssessment.id)
+
+      if (updateError) {
+        console.error('Failed to update existing assessment:', updateError)
+        return NextResponse.json(
+          { error: 'Failed to update assessment', details: updateError.message },
+          { status: 500 }
+        )
+      }
+
+      return NextResponse.json({ assessmentId: existingAssessment.id })
+    }
+
+    // ── 4. Create new assessment ─────────────────────────────────────
     const { data: assessment, error: assessmentError } = await supabase
       .from('assessments')
-      .insert([{
-        user_id: userId,
-        raw_answers: answers, 
-        payment_status: true
-      }])
+      .insert([
+        {
+          user_id: userId,
+          raw_answers: answers,
+          payment_status: true, // TODO: wire to real payment before go-live
+        },
+      ])
       .select('id')
       .single()
 
     if (assessmentError) {
-      return NextResponse.json({ error: 'Assessment Error', details: assessmentError }, { status: 500 })
+      return NextResponse.json(
+        { error: 'Failed to save assessment', details: assessmentError.message },
+        { status: 500 }
+      )
     }
 
-    // 3. Send the Assessment ID back to the frontend so it can route to the results page
     return NextResponse.json({ assessmentId: assessment.id })
 
   } catch (error) {
-    return NextResponse.json({ error: 'Server Failure', details: error.message }, { status: 500 })
+    console.error('Submit Assessment Error:', error)
+    return NextResponse.json(
+      { error: 'Server error', details: error.message },
+      { status: 500 }
+    )
   }
 }
