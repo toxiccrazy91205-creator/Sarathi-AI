@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '../../../lib/supabase'
-import { GoogleGenerativeAI } from '@google/generative-ai'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -263,24 +262,12 @@ const OUTPUT_SCHEMA = `{
 }`
 
 // ─────────────────────────────────────────────
-// GEMINI CALL
+// OPENROUTER CALL (free models available)
 // ─────────────────────────────────────────────
 async function generateValidatedRoadmap(promptData) {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error('Missing GEMINI_API_KEY environment variable')
+  if (!process.env.OPENROUTER_API_KEY) {
+    throw new Error('Missing OPENROUTER_API_KEY environment variable')
   }
-
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-
-  // 🚀 FIX: Swapped to the more robust gemini-2.5-pro model to bypass the traffic jam
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-2.5-pro',
-    systemInstruction: SYSTEM_PROMPT,
-    generationConfig: {
-      responseMimeType: 'application/json',
-      temperature: 0.25,
-    },
-  })
 
   const userPrompt = `
 STUDENT PROFILE:
@@ -299,12 +286,42 @@ FINAL REMINDER BEFORE YOU WRITE:
 - Did you check Q48 (procrastination) and add a SEVERE OPERATIONAL RISK warning if score <= 2?
 - Does Year 5 roadmap mirror the Q58 role model's path?
 - Does the india_vs_abroad_guidance field reflect Q60's exact answer?
-`
+  `
 
-  const result = await model.generateContent(userPrompt)
-  const responseText = result.response.text()
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      'HTTP-Referer': 'https://sarathi-ai.vercel.app',
+      'X-Title': 'SARATHI AI',
+    },
+    body: JSON.stringify({
+      model: 'microsoft/phi-4',
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: userPrompt }
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.25,
+    }),
+  })
 
-  return JSON.parse(responseText)
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`OpenRouter error: ${error}`)
+  }
+
+  const data = await response.json()
+  const content = data.choices[0]?.message?.content
+
+  if (!content) {
+    throw new Error('No content returned from OpenRouter')
+  }
+
+const parsed = JSON.parse(content)
+
+  return parsed
 }
 
 // ─────────────────────────────────────────────

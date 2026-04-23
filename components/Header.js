@@ -13,21 +13,18 @@ export default function Header() {
     <header className="border-b border-slate-100 bg-white sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto flex h-20 sm:h-24 items-center justify-between px-4 sm:px-6 lg:px-8">
         
-        {/* 🚀 STRIP-STYLE LOGO WITH TAGLINE */}
-        <div className="flex items-center">
-          <Link href="/" className="flex items-center gap-3 sm:gap-5 hover:opacity-90 transition-opacity">
-            {/* 🚀 FIX: Simplified wrapper for the new horizontal logo */}
-            <div className="flex items-center">
-               <SarathiLogo />
-            </div>
-            {/* Vertical Divider Line */}
-            <div className="h-8 sm:h-10 w-[2px] bg-slate-200"></div>
-            {/* Empowering Tagline */}
-            <div className="flex flex-col justify-center">
-              <span className="text-[8px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-[0.1em] sm:tracking-[0.2em] text-slate-400 leading-tight">Empowering</span>
-              <span className="text-[8px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-[0.1em] sm:tracking-[0.2em] text-slate-400 leading-tight">Student Clarity</span>
-            </div>
-          </Link>
+{/* 🚀 STRIP-STYLE LOGO WITH TAGLINE */}
+        <div className="flex items-center gap-3 sm:gap-5">
+          <div className="flex items-center">
+            <SarathiLogo />
+          </div>
+          {/* Vertical Divider Line */}
+          <div className="h-8 sm:h-10 w-[2px] bg-slate-200"></div>
+          {/* Empowering Tagline */}
+          <div className="flex flex-col justify-center">
+            <span className="text-[8px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-[0.1em] sm:tracking-[0.2em] text-slate-400 leading-tight">Empowering</span>
+            <span className="text-[8px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-[0.1em] sm:tracking-[0.2em] text-slate-400 leading-tight">Student Clarity</span>
+          </div>
         </div>
 
         {/* 💻 Desktop Navigation */}
