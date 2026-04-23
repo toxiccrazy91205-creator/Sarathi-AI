@@ -49,34 +49,13 @@ git push -u origin main
 
 ## Step 4: Configure Build Settings
 
-Amplify auto-detects Next.js. Use these settings:
+Amplify auto-detects Next.js. Verify these settings:
 
 | Setting | Value |
 |---------|-------|
 | Build command | `npm run build` |
 | Build directory | `.next` |
 | Node version | `18.x` |
-
-Or add custom `amplify.yml`:
-
-```yaml
-version: 1
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - npm install
-    build:
-      commands:
-        - npm run build
-  artifacts:
-    baseDirectory: .next
-    files:
-      - '**/*'
-  cache:
-    paths:
-      - node_modules/**/*
-```
 
 Click **Next**.
 

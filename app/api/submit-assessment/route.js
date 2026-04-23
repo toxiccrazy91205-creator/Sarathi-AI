@@ -150,7 +150,7 @@ export async function POST(request) {
   } catch (error) {
     console.error('Submit Assessment Error:', error)
     return NextResponse.json(
-      { error: 'Server error', details: error.message, stack: error.stack },
+      { error: 'Server error', details: error.message },
       { status: 500 }
     )
   }
