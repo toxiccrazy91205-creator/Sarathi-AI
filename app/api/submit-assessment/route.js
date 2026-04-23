@@ -6,6 +6,14 @@ const EXPECTED_ANSWER_COUNT = 60
 export async function POST(request) {
   try {
     const body = await request.json()
+    
+    console.log('Submit request received:', { name: body.name, email: body.email, college: body.college, answersLength: body.answers?.length })
+    console.log('Env check:', { 
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'set' : 'missing',
+      anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'set' : 'missing',
+      serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'set' : 'missing'
+    })
+    
     const { name, email, college, answers } = body
 
     // ── 1. Input validation ──────────────────────────────────────────
